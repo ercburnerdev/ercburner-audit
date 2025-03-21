@@ -1,0 +1,4 @@
+{
+    "include_paths": "contracts/burner/",
+    "detectors_to_exclude": ["naming-convention"]
+}
