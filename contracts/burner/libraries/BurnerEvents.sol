@@ -113,25 +113,25 @@ library BurnerEvents {
     /// @notice Emitted when the Router is changed
     /// @param newRouter The new Router address
     event RouterChanged(
-        address newRouter
+        address indexed newRouter
     );
 
     /// @notice Emitted when the Permit2 contract is changed
     /// @param newPermit2 The new Permit2 address
     event Permit2Changed(
-        address newPermit2
+        address indexed newPermit2
     );
 
     /// @notice Emitted when the fee collector is changed
     /// @param newFeeCollector The new fee collector address
     event FeeCollectorChanged(
-        address newFeeCollector
+        address indexed newFeeCollector
     );
 
     /// @notice Emitted when the bridge address is changed
     /// @param newBridgeAddress The new bridge address
     event BridgeAddressChanged(
-        address newBridgeAddress
+        address indexed newBridgeAddress
     );
 
     /// @notice Emitted when the bridge is paused
@@ -149,6 +149,6 @@ library BurnerEvents {
     /// @notice Emitted when the admin is changed
     /// @param newAdmin The new admin address
     event AdminChanged(
-        address newAdmin
+        address indexed newAdmin
     );
 }

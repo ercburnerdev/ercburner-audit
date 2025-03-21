@@ -134,17 +134,8 @@ library BurnerErrors {
     /// @notice Emitted when the max tokens per burn is zero
     error ZeroMaxTokensPerBurn();
 
-    /// @notice Emitted when the bridge call fails
-    error BridgeCallFailed();
-
-    /// @notice Emitted when the fee transfer fails
-    error FeeTransferFailed();
-
     /// @notice Emitted when the bridge is paused
     error BridgePaused();
-
-    /// @notice Emitted when the partner is invalid
-    error InvalidPartner();
 
     /// @notice Emitted when the maximum tier is reached
     error MaximumTierReached();

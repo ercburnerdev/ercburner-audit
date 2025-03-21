@@ -71,7 +71,7 @@ contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable
     uint8 public referrerFeeShare;
 
     /// @notice The partners addresses mapped to a specific fee share
-    mapping(address => uint8) public partners;
+    mapping(address partner => uint8 feeShare) public partners;
 
     /// @notice The minimum gas required for a swap
     /// @dev This is to short circuit the burn function and prevent reverts cause by low gas.
@@ -122,7 +122,7 @@ contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable
         bool _pauseReferral,
         address _admin
     ) 
-        public 
+        external 
         initializer 
     {
         __ReentrancyGuard_init_unchained();
@@ -173,7 +173,7 @@ contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable
     /// @dev Future upgrade initialization logic
     /// @param version The version number
     function reinitialize(uint8 version) 
-        public 
+        external 
         reinitializer(version) 
         nonReentrant 
     {
@@ -473,7 +473,7 @@ contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable
     /// @param param The swap parameters to validate
     /// @return amountIn The amount of tokens to swap
     function _validateAndDecodeSwapParams(SwapParams calldata param) 
-        internal 
+        private 
         view 
         returns (uint256 amountIn) 
     {
@@ -515,9 +515,9 @@ contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable
     /// @param _amount The amount to calculate the referrer fee for
     /// @return referrerFee The referrer fee
     function _calculateReferrerFee(uint256 _amount, address _referrer) 
-        internal 
+        private 
         view 
-        returns (uint256) 
+        returns (uint256 referrerFee) 
     {
         // If the referral is paused, return 0.
         if (pauseReferral) return 0;
