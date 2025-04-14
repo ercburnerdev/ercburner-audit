@@ -43,7 +43,7 @@ async function deployTestEnvironment() {
   ]);
 
   // Deploy Burner
-  const Burner = await ethers.getContractFactory("contracts/burner/AVAXBurner.sol:Burner");
+  const Burner = await ethers.getContractFactory("contracts/burner/AVAXBurner.sol:AVAXBurner");
   const burner = await upgrades.deployProxy(Burner, [
     await mockLBRouter.getAddress(),
     await mockReceiver.getAddress(),
@@ -58,7 +58,7 @@ async function deployTestEnvironment() {
     false,
     false,
     admin.address
-  ], {initializer: "initialize"});
+  ], {initializer: "initializeBurner"});
 
   // Setup initial state
   await mockToken.mint(user.address, ethers.parseEther("1000"));

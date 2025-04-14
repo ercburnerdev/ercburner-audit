@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../burner/URBurner.sol";
 
 contract MaliciousTokenReentrancy is ERC20 {
-    Burner public burner;
-    
+    URBurner public burner;
+
     constructor(address _burner) ERC20("MaliciousToken", "MAL") {
-        burner = Burner(payable(_burner));
+        burner = URBurner(payable(_burner));
         _mint(msg.sender, 1000000 * 10**18);
     }
 
@@ -16,12 +16,12 @@ contract MaliciousTokenReentrancy is ERC20 {
     function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         // Attempt reentrancy attack when tokens are transferred from sender to incinerator
         if (recipient == address(burner)) {
-            Burner.SwapParams memory params = Burner.SwapParams({
+            URBurner.SwapParams memory params = URBurner.SwapParams({
                 tokenIn: address(this),
                 commands: "0x00",
                 inputs: new bytes[](1)
             });
-            Burner.SwapParams[] memory paramsArray = new Burner.SwapParams[](1);
+            URBurner.SwapParams[] memory paramsArray = new URBurner.SwapParams[](1);
             paramsArray[0] = params;
             burner.swapExactInputMultiple(paramsArray, msg.sender, false, bytes(""), address(0));
         }

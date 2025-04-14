@@ -47,7 +47,7 @@ async function deployTestEnvironment() {
   ]);
 
   // Deploy Burner
-  const Burner = await ethers.getContractFactory("contracts/burner/URBurner.sol:Burner");
+  const Burner = await ethers.getContractFactory("contracts/burner/URBurner.sol:URBurner");
   const burner = await upgrades.deployProxy(Burner, [
     await mockUniversalRouter.getAddress(),
     await mockPermit2.getAddress(),
@@ -63,7 +63,7 @@ async function deployTestEnvironment() {
     false,
     false,
     admin.address
-  ], {initializer: "initialize"});
+  ], {initializer: "initializeBurner"});
 
   // Setup initial state
   await mockToken.mint(user.address, ethers.parseEther("1000"));
