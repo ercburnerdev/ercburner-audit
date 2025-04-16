@@ -49,44 +49,6 @@ describe("Burner - Referrer Error Handling", function () {
     )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelf");
   });
 
-  it("Should revert when trying to use fee collector as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      env.feeCollector.address
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeFeeCollector");
-  });
-
-  it("Should revert when trying to use contract address as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      await env.burner.getAddress()
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeContract");
-  });
-
   it("Should revert when non-referrer tries to upgrade", async function () {
     const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
 
@@ -163,42 +125,6 @@ describe("Burner - Referrer Error Handling", function () {
     
     await expect(env.burner.connect(env.user).upgradeReferrer(30n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "InsufficientAllowanceOrAmount");
-  });
-
-  it("Should revert when fee collector is set as recipient", async function () {
-    const swap = await getSwapParamsV3(env);
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      env.feeCollector.address, // Fee collector as recipient
-      false,
-      "0x",
-      env.referrer.address
-    )).to.be.revertedWithCustomError(env.burner, "ToCannotBeFeeCollector");
-  });
-
-  it("Should revert when contract is set as recipient", async function () {
-    const swap = await getSwapParamsV3(env);
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      await env.burner.getAddress(), // Contract as recipient
-      false,
-      "0x",
-      env.referrer.address
-    )).to.be.revertedWithCustomError(env.burner, "ToCannotBeContract");
   });
 
   it("Should revert when the contract is paused", async function () {

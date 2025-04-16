@@ -155,16 +155,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _referrer The referrer address
     modifier referrerCheck(address _referrer) {
         if (_referrer == msg.sender && partners[_referrer] == 0) revert BurnerErrors.ReferrerCannotBeSelf();
-        if (_referrer == feeCollector) revert BurnerErrors.ReferrerCannotBeFeeCollector();
-        if (_referrer == address(this)) revert BurnerErrors.ReferrerCannotBeContract();
-        _;
-    }
-    
-    /// @notice Modifier to check if the recipient is valid
-    /// @param _to The recipient address
-    modifier toCheck(address _to) {
-        if (_to == address(this)) revert BurnerErrors.ToCannotBeContract();
-        if (_to == feeCollector) revert BurnerErrors.ToCannotBeFeeCollector();
         _;
     }
 

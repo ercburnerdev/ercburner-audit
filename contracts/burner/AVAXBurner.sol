@@ -132,7 +132,6 @@ contract AVAXBurner is Burner {
         nonReentrant 
         whenNotPaused 
         referrerCheck(_referrer) 
-        toCheck(_to) 
         returns (uint256 amountAfterFee) 
     {
         if (bridge && pauseBridge) revert BurnerErrors.BridgePaused();

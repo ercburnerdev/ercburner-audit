@@ -55,20 +55,8 @@ library BurnerErrors {
     /// @notice Emitted when the referrer cannot be the self
     error ReferrerCannotBeSelf();
 
-    /// @notice Emitted when the referrer cannot be the fee collector
-    error ReferrerCannotBeFeeCollector();
-
-    /// @notice Emitted when the referrer cannot be the contract
-    error ReferrerCannotBeContract();
-
     /// @notice Emitted when a referrer is not registered
     error ReferrerNotRegistered();
-
-    /// @notice Emitted when the to cannot be the contract
-    error ToCannotBeContract();
-
-    /// @notice Emitted when the to cannot be the fee collector
-    error ToCannotBeFeeCollector();
 
     /// @notice Emitted when there is an issue with the swap
     /// @param preBalance The pre-balance

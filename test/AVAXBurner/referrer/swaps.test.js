@@ -158,46 +158,6 @@ describe("Burner - Referrer Swaps", function () {
     )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelf");
   });
 
-  it("Should revert when fee collector is used as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    // Try to use fee collector as referrer
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      env.feeCollector.address
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeFeeCollector");
-  });
-
-  it("Should revert when contract address is used as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    // Try to use contract address as referrer
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      await env.burner.getAddress()
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeContract");
-  });
-
   it("Should calculate and distribute partner tier referrer fee correctly (30% tier)", async function () {
     // Setup 30% tier partner
     await env.burner.connect(env.owner).putPartner(env.referrer.address, 6);
