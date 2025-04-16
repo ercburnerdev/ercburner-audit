@@ -116,12 +116,6 @@ library BurnerEvents {
         address indexed newRouter
     );
 
-    /// @notice Emitted when the Permit2 contract is changed
-    /// @param newPermit2 The new Permit2 address
-    event Permit2Changed(
-        address indexed newPermit2
-    );
-
     /// @notice Emitted when the fee collector is changed
     /// @param newFeeCollector The new fee collector address
     event FeeCollectorChanged(

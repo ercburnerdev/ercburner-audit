@@ -165,7 +165,6 @@ describe("Burner - Admin Functions", function () {
     let swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs
     }];

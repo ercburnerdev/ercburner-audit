@@ -215,7 +215,8 @@ describe("Burner - Multiple Swaps", function () {
         ethers.parseEther("100"),
         i % 3 === 0 ? ethers.parseEther("2") : ethers.parseEther("0.1"),
         i % 2 === 0 ? encodedPath : [await mockTokens[i].getAddress(), await env.mockWNATIVE.getAddress()],
-        true,
+        false,
+        env.user.address,
         Math.floor(Date.now() / 1000) + 3600
       );
 

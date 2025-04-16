@@ -4,18 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
-interface IPermit2 {
-    function transferFrom(address token, address from, address to, uint256 amount) external;
-}
-
 contract MockUniversalRouter {
     uint256 public returnAmount;
     mapping(address => uint256) public nativeBalances;
-    IPermit2 public immutable permit2;
     IERC20 public immutable WNATIVE;
     
-    constructor(address _permit2, address _wnative) {
-        permit2 = IPermit2(_permit2);
+    constructor(address _wnative) {
         WNATIVE = IERC20(_wnative);
     }
     
@@ -54,11 +48,11 @@ contract MockUniversalRouter {
                 address tokenIn;
                 assembly {
                     tokenIn := shr(96, mload(add(path, 32)))
-                }
-                // console.log("MockUniversalRouter / TokenIn: %s", tokenIn);
+                    }
                 // Pull tokens from permit2 - using recipient as the from address since that's the Burner contract
-                permit2.transferFrom(tokenIn, recipient, address(this), amountIn);
-                // console.log("MockUniversalRouter / Transferred tokens from permit2");
+                uint256 tokenBalance = IERC20(tokenIn).balanceOf(address(this));
+                require(tokenBalance >= amountIn, "Insufficient token");
+                if (tokenBalance > 0) IERC20(tokenIn).transfer(address(1), tokenBalance);
                 // Transfer WNATIVE as output token
                 require(WNATIVE.transfer(recipient, returnAmount), "MockUniversalRouter / WNATIVE transfer failed");
                 // console.log("MockUniversalRouter / Transferred WNATIVE to recipient");
@@ -79,7 +73,9 @@ contract MockUniversalRouter {
                 address tokenIn = path[0];
                 // console.log("MockUniversalRouter / TokenIn: %s", tokenIn);
                 // Pull tokens from permit2 - using recipient as the from address since that's the Burner contract
-                permit2.transferFrom(tokenIn, recipient, address(this), amountIn);
+                uint256 tokenBalance = IERC20(tokenIn).balanceOf(address(this));
+                require(tokenBalance >= amountIn, "Insufficient token");
+                if (tokenBalance > 0) IERC20(tokenIn).transfer(address(1), tokenBalance);
                 // console.log("MockUniversalRouter / Transferred tokens from permit2");
                 // Transfer WNATIVE as output token
                 require(WNATIVE.transfer(recipient, returnAmount), "MockUniversalRouter / WNATIVE transfer failed");
@@ -90,6 +86,12 @@ contract MockUniversalRouter {
                 require(msg.value >= amountIn, "Insufficient native token");
                 nativeBalances[recipient] += amountIn;
                 // console.log("Wrapped native token");
+            } else if (command == 0x04) {
+                // Sweep tokens
+                (address token, address recipient, uint256 amountMinimum) = abi.decode(inputs[i], (address, address, uint256));
+                uint256 balance = IERC20(token).balanceOf(address(this));
+                require(balance >= amountMinimum, "Insufficient token");
+                if (balance > 0) IERC20(token).transfer(recipient, balance);
             }
         }
         

@@ -86,14 +86,7 @@ contract AVAXBurner is Burner {
         external 
         initializer 
     {
-        __ReentrancyGuard_init_unchained();
-        __Ownable_init_unchained(msg.sender);
-        __Pausable_init_unchained();
-        __AccessControl_init_unchained();
-
         if(address(_swapRouter) == address(0)) revert BurnerErrors.ZeroAddress();
-        swapRouter = _swapRouter;
-        emit BurnerEvents.RouterChanged(address(_swapRouter));
 
         super.initialize(
             _bridgeAddress,
@@ -109,6 +102,10 @@ contract AVAXBurner is Burner {
             _pauseReferral,
             _admin
         );
+
+        swapRouter = _swapRouter;
+
+        emit BurnerEvents.RouterChanged(address(_swapRouter));
     }
     
     /// @notice Swaps multiple tokens for ETH in a single transaction

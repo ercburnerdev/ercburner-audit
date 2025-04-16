@@ -58,69 +58,61 @@ function prepareSwapExactInput(
     amountIn,
     amountOutMinimum,
     path,
-    sourceOfFundsIsMsgSender
+    sourceOfFundsIsMsgSender,
+    sweepRecipient,
+    deadline
 ) {
     const amountInBig = BigInt(amountIn);
     const amountOutMinBig = BigInt(amountOutMinimum);
     const abiCoder = new ethers.AbiCoder();
-    let commands = [];
-    let input;
+    let commandsString = "";
     let inputs = [];
     
+    let mainInput;
+    
     if (command == "0x00") {
-        // Encode the inputs for the V3_SWAP_EXACT_IN command
-        input = abiCoder.encode(
+        mainInput = abiCoder.encode(
             ["address", "uint256", "uint256", "bytes", "bool"],
             [recipient, amountInBig, amountOutMinBig, path, sourceOfFundsIsMsgSender]
         );
-
-        // Encode commands (as a single byte)
-        commands = ethers.hexlify(ethers.zeroPadBytes(command, 1));
-        inputs = [input];
     } else if (command == "0x08") {
-        input = abiCoder.encode(
+        mainInput = abiCoder.encode(
             ["address", "uint256", "uint256", "address[]", "bool"],
             [recipient, amountInBig, amountOutMinBig, path, sourceOfFundsIsMsgSender]
         );
-        commands = ethers.hexlify(ethers.zeroPadBytes(command, 1));
-        inputs = [input];
     } 
-    // else if (command == "0x10") {
-    //     let actions = abiCoder.encodePacked(
-    //         uint8(0x06),
-    //         uint8(0x0c),
-    //         uint8(0x0f)
-
-    //     );
-
-
-    //     input = abiCoder.encode(
-    //         ["address", "uint256"],
-    //         [recipient, amountInBig]
-    //     );
-
-    //     commands = ethers.hexlify(ethers.zeroPadBytes(command, 1));
-    //     inputs = [input];
-    // }
     else if (command == "0x0c") {
-        input = abiCoder.encode(
-            ["address", "uint256"],
-            [recipient, amountInBig]
+        mainInput = abiCoder.encode(
+            ["address", "address", "uint256"],
+            [recipient, tokenIn, amountInBig]
         );
-        commands = ethers.hexlify(ethers.zeroPadBytes(command, 1));
-        inputs = [input];
+    } else {
+        throw new Error(`Unsupported command: ${command}`);
+    }
+
+    commandsString += command.startsWith("0x") ? command.substring(2) : command;
+    inputs.push(mainInput);
+    
+    if (command == "0x00" || command == "0x08") {
+        const sweepInput = abiCoder.encode( 
+            ["address", "address", "uint256"],
+            [tokenIn, sweepRecipient, amountInBig] 
+        );
+        commandsString += "04"; 
+        inputs.push(sweepInput);
     }
 
     return {
         tokenIn,
         amountIn,
         amountOutMinimum,
-        commands,
+        commands: "0x" + commandsString,
         inputs
     };
 }
 
-function URswapParamForWnative(tokenAddress, amountIn, incineratorAddress, wnativeAddress) {
+function URswapParamForWnative(tokenAddress, amountIn, incineratorAddress, sweepRecipient, wnativeAddress) {
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
     return prepareSwapExactInput(
         "0x0c",
         incineratorAddress,
@@ -128,9 +120,10 @@ function URswapParamForWnative(tokenAddress, amountIn, incineratorAddress, wnati
         amountIn,
         amountIn,
         [],
-        null,
-        BigInt(Math.floor(Date.now() / 1000) + 600)
-    )
+        false,
+        sweepRecipient,
+        deadline
+    );
 }
 
 module.exports = { prepareSwapExactInput, encodePath, URswapParamForWnative };

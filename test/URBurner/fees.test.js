@@ -71,7 +71,6 @@ describe("Burner - Fees", function () {
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
 
-
     // Check final ETH balances
     const userBalanceAfter = await ethers.provider.getBalance(env.user.address);
     const feeCollectorBalanceAfter = await ethers.provider.getBalance(env.feeCollector.address);
@@ -79,7 +78,7 @@ describe("Burner - Fees", function () {
     const expectedUserBalance = userBalanceBefore - gasCost + ethers.parseEther("0.0975"); // 97.5% of 0.1 ETH
 
     const expectedFeeCollectorBalance = feeCollectorBalanceBefore + ethers.parseEther("0.0025"); // 2.5% of 0.1 ETH
-
+    
     expect(userBalanceAfter).to.equal(expectedUserBalance);
     expect(feeCollectorBalanceAfter).to.equal(expectedFeeCollectorBalance);
   });

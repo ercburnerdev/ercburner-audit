@@ -98,8 +98,14 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         bool _pauseReferral,
         address _admin
     ) 
-        internal
+        internal 
+        initializer 
     {
+        __ReentrancyGuard_init_unchained();
+        __Ownable_init_unchained(msg.sender);
+        __Pausable_init_unchained();
+        __AccessControl_init_unchained();
+
         if(_bridgeAddress == address(0)) revert BurnerErrors.ZeroAddress();
         if(_WNATIVE == address(0)) revert BurnerErrors.ZeroAddress();
         if(_USDC == address(0)) revert BurnerErrors.ZeroAddress();

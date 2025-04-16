@@ -16,7 +16,6 @@ import { Address } from '@openzeppelin/contracts/utils/Address.sol';
 
 import { Burner } from "./Burner.sol";
 import { IUniversalRouter } from "./interfaces/IUniversalRouter.sol";
-import { IPermit2 } from "./interfaces/IPermit2.sol";
 import { IWETH } from "./interfaces/IWETH.sol";
 
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
@@ -33,20 +32,16 @@ contract URBurner is Burner {
     using BurnerEvents for *;
 
     /// @notice The parameters for a swap
-    /// @param tokenIn The token to swap
     /// @param commands The command the router will execute
     /// @param inputs The parameters to the command
     struct SwapParams
     {
-        address tokenIn;
         bytes commands;
         bytes[] inputs;
     }
 
     /// @notice The Universal Router contract
     IUniversalRouter public universalRouter;
-    /// @notice The Permit2 contract
-    IPermit2 public permit2;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -55,7 +50,6 @@ contract URBurner is Burner {
 
     /// @notice Initializes the contract with required parameters
     /// @param _universalRouter Address of Uniswap's Universal Router contract
-    /// @param _permit2 Address of the Permit2 contract
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token
@@ -70,7 +64,6 @@ contract URBurner is Burner {
     /// @param _admin Address of the admin
     function initializeBurner(
         IUniversalRouter _universalRouter,
-        IPermit2 _permit2,
         address _bridgeAddress,
         address _WNATIVE,
         address _USDC,
@@ -85,23 +78,13 @@ contract URBurner is Burner {
         address _admin
     ) 
         external 
-        initializer 
     {
-        __ReentrancyGuard_init_unchained();
-        __Ownable_init_unchained(msg.sender);
-        __Pausable_init_unchained();
-        __AccessControl_init_unchained();
-
         if(address(_universalRouter) == address(0)) revert BurnerErrors.ZeroAddress();
-        if(address(_permit2) == address(0)) revert BurnerErrors.ZeroAddress();
 
         universalRouter = _universalRouter;
-        permit2 = _permit2;
+        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _feeCollector, _burnFeeDivisor, _bridgeFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
 
         emit BurnerEvents.RouterChanged(address(_universalRouter));
-        emit BurnerEvents.Permit2Changed(address(_permit2));
-
-        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _feeCollector, _burnFeeDivisor, _bridgeFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
     }
     
 
@@ -139,69 +122,62 @@ contract URBurner is Burner {
         uint48 expiration = uint48(block.timestamp + 900);
         uint256 len = params.length;
 
-        for (uint256 i; i < len; ) {
+        for (uint256 i; i < len; i++) {
             SwapParams calldata param = params[i];
-            uint256 amountIn = _validateAndDecodeSwapParams(param);
+            // Validate and decode swap parameters
+            (address tokenIn, uint256 amountIn) = _validateAndDecodeSwapParams(param);
 
-            // Short circuit if insufficient gas.
+            // Skip processing if gas is insufficient or amount is zero
             if (gasleft() < minGasForSwap) {
-                emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, amountIn, "Insufficient gas");
+                emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Insufficient gas");
                 break;
             }
-            // Skip if amount is 0.
+            
             if (amountIn == 0) {
-                emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, amountIn, "Zero amount");
-                unchecked { ++i; }
+                emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Zero amount");
                 continue;
             }
 
-
-
-            // Get the pre-balance of WNATIVE in the contract.
+            // Get the pre-balance of WNATIVE in the contract
             uint256 preBalance = IERC20(WNATIVE).balanceOf(address(this));
 
-            // Transfer the token from the sender to the contract.
-            IERC20 token = IERC20(param.tokenIn);
-            token.safeTransferFrom(msg.sender, address(this), amountIn);
-
-            // If token is WNATIVE, skip the swap.
-            if (param.tokenIn == WNATIVE) {
+            // If token is WNATIVE, skip the swap
+            if (tokenIn == WNATIVE) {
+                IERC20(tokenIn).safeTransferFrom(msg.sender, address(this), amountIn);
                 totalAmountOut += amountIn;
-                emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, amountIn, amountIn);
-                unchecked { ++i; }
+                emit BurnerEvents.SwapSuccess(msg.sender, tokenIn, amountIn, amountIn);
                 continue;
             }
 
-            // Increase the allowance of the permit2 contract.
-            token.safeIncreaseAllowance(address(permit2), amountIn);
-            // Approve router for the amount of tokens to be swapped.
-            permit2.approve(param.tokenIn, address(universalRouter), uint160(amountIn), expiration);
+            IERC20(tokenIn).safeTransferFrom(msg.sender, address(universalRouter), amountIn);
+            
+            // Split commands and inputs into two separate arrays for the router
+            bytes memory swapCommand = new bytes(1);
+            swapCommand[0] = param.commands[0];
+            bytes[] memory swapInputs = new bytes[](1);
+            swapInputs[0] = param.inputs[0];
+            
+            bytes memory sweepCommand = new bytes(1);
+            sweepCommand[0] = param.commands[1];
+            bytes[] memory sweepInputs = new bytes[](1);
+            sweepInputs[0] = param.inputs[1];
 
-            // Execute the swap.
-            try universalRouter.execute(param.commands, param.inputs, expiration) {
-                // Get the post-balance of WNATIVE in the contract.
+            try universalRouter.execute(swapCommand, swapInputs, expiration) {
+                // Calculate the actual amount received
                 uint256 postBalance = IERC20(WNATIVE).balanceOf(address(this));
-
-                // If the post-balance is less than the pre-balance, there was an issue with the swap.
                 if (postBalance < preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
-
-                // Calculate the actual amount received.
+                
                 uint256 actualReceived = postBalance - preBalance;
                 totalAmountOut += actualReceived;
 
-                emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, amountIn, actualReceived);
+                emit BurnerEvents.SwapSuccess(msg.sender, tokenIn, amountIn, actualReceived);
             } catch {
-                // If the swap fails, decrease the allowance of the permit2 contract.
-                token.safeDecreaseAllowance(address(permit2), amountIn);
-                // Return the tokens to the sender.
-                token.safeTransfer(msg.sender, amountIn);
-
-                emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, amountIn, "Router error");
-
-                unchecked { ++i; }
-                continue;
+                try universalRouter.execute(sweepCommand, sweepInputs, expiration) {
+                    emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Router error");
+                } catch {
+                    revert BurnerErrors.SwapIssue(preBalance, 0);
+                }
             }
-            unchecked { ++i; }
         }
         
         // If the total amount out is 0, return 0.
@@ -261,45 +237,107 @@ contract URBurner is Burner {
     /// @notice Validates and decodes swap parameters
     /// @dev Ensures the swap parameters are valid and returns the input amount
     /// @param param The swap parameters to validate
+    /// @return tokenIn The token to swap
     /// @return amountIn The amount of tokens to swap
     function _validateAndDecodeSwapParams(SwapParams calldata param) 
         private 
         view 
-        returns (uint256 amountIn) 
+        returns (address tokenIn, uint256 amountIn) 
     {
-        // If the commands length is not 1, revert.
-        if (param.commands.length != 1) revert BurnerErrors.InvalidCommands(param.commands);
-        // If the inputs length is not 1, revert.
-        if (param.inputs.length != 1) revert BurnerErrors.MismatchedInputLength(param.inputs);
+        // If the commands length is over 2, revert.
+        if (param.commands.length > 2) revert BurnerErrors.InvalidCommands(param.commands);
+        // If the inputs length is over 2, revert.
+        if (param.inputs.length != param.commands.length) revert BurnerErrors.MismatchedInputLength(param.inputs);
         // Get the command.
-        bytes1 command = param.commands[0];
-        // If the command is not 0x00, 0x08, or 0x0c, revert.
-        if (command != 0x00 && command != 0x08 && command != 0x0c) {
-            revert BurnerErrors.InvalidCommand(command);
-        }
+        bytes1 commandSwap = param.commands[0];
+        bytes1 commandSweep;
+
         address recipient = address(0);
-        bool payerIsUser = false;
-        uint256 amountOutMinimum = 0;
         
         // Decode input based on command, to ensure the input is valid.
-        if (command == 0x00) {
-            bytes memory path;
-            (recipient, amountIn, amountOutMinimum, path, payerIsUser) = 
-            abi.decode(param.inputs[0],(address, uint256, uint256, bytes, bool));
-        } else if (command == 0x08) {
-            address[] memory path;
-            (recipient, amountIn, amountOutMinimum, path, payerIsUser) = 
-            abi.decode(param.inputs[0],(address, uint256, uint256, address[], bool));
-        } else if (command == 0x0c) {
-            (recipient, amountIn) =
-            abi.decode(param.inputs[0], (address, uint256));
-            amountOutMinimum = amountIn;
+        if (commandSwap == 0x00) {
+            (recipient, tokenIn, amountIn) = _validateAndDecodeV3(param);
+            commandSweep = param.commands[1];
+        } else if (commandSwap == 0x08) {
+            (recipient, tokenIn, amountIn) = _validateAndDecodeV2(param);
+            commandSweep = param.commands[1];
+        } else if (commandSwap == 0x0c) {
+            (recipient, tokenIn, amountIn) = _validateAndDecodeWNATIVE(param);
         }
-        if (recipient != address(this)) {
-            revert BurnerErrors.InvalidRecipient(recipient);
+
+        if (recipient != address(this)) revert BurnerErrors.InvalidRecipient(recipient);
+
+        if ((commandSwap == 0x00 || commandSwap == 0x08) && commandSweep == 0x04) {
+            _validateAndDecodeSweep(param, tokenIn, amountIn);
         }
-        return amountIn;
+        
+        return (tokenIn, amountIn);
     }
+
+    function _validateAndDecodeV3(SwapParams calldata param)
+        private
+        view
+        returns (address recipient, address tokenIn, uint256 amountIn)
+    {
+        bytes memory path;
+        address tokenOut;
+        bool payerIsUser;
+
+        (recipient, amountIn, , path, payerIsUser) = 
+        abi.decode(param.inputs[0],(address, uint256, uint256, bytes, bool));
+        if (path.length == 43) {
+            // For a path with format [tokenIn (20 bytes)][fee (3 bytes)][tokenOut (20 bytes)]
+            assembly {
+                tokenIn := mload(add(path, 20))
+                tokenOut := mload(add(path, 43))
+            }
+            if (tokenOut != WNATIVE) revert BurnerErrors.InvalidTokenOut(tokenOut);
+            if (payerIsUser) revert BurnerErrors.PayerIsUser();
+        } else {
+            revert BurnerErrors.MismatchedInputLength(param.inputs);
+        }
+    }
+
+    function _validateAndDecodeV2(SwapParams calldata param)
+        private
+        view
+        returns (address recipient, address tokenIn, uint256 amountIn)
+    {
+        address[] memory path;
+        address tokenOut;
+        bool payerIsUser;
+        (recipient, amountIn, , path, payerIsUser) = 
+        abi.decode(param.inputs[0],(address, uint256, uint256, address[], bool));
+        if (path.length == 2) {
+            tokenIn = path[0];
+            tokenOut = path[1];
+            if (tokenOut != WNATIVE) revert BurnerErrors.InvalidTokenOut(tokenOut);
+            if (payerIsUser) revert BurnerErrors.PayerIsUser();
+        } else {
+            revert BurnerErrors.MismatchedInputLength(param.inputs);
+        }
+    }
+
+    function _validateAndDecodeWNATIVE(SwapParams calldata param)
+        private
+        pure
+        returns (address recipient, address tokenIn, uint256 amountIn)
+    {
+        (recipient, tokenIn, amountIn) =
+        abi.decode(param.inputs[0], (address, address, uint256));
+    }
+
+    function _validateAndDecodeSweep(SwapParams calldata param, address tokenIn, uint256 amountIn)
+        private
+        view
+    {
+        (address tokenToSweep, address sender, uint256 amountSweeped) =
+        abi.decode(param.inputs[1], (address, address, uint256));
+        if (tokenToSweep != tokenIn) revert BurnerErrors.InvalidTokenToSweep(tokenToSweep, tokenIn);
+        if (sender != msg.sender) revert BurnerErrors.InvalidSweeper(sender, msg.sender);
+        if (amountSweeped != amountIn) revert BurnerErrors.InvalidSweepAmount(amountSweeped, amountIn);
+    }
+    
 
     /// @notice Updates the universal router address
     /// @dev Can only be called by the owner
@@ -312,18 +350,5 @@ contract URBurner is Burner {
         if (_newUniversalRouter == address(0)) revert BurnerErrors.ZeroAddress();
         universalRouter = IUniversalRouter(_newUniversalRouter);
         emit BurnerEvents.RouterChanged(_newUniversalRouter);
-    }
-
-    /// @notice Updates the permit2 address
-    /// @dev Can only be called by the owner
-    /// @param _newPermit2 New address to permit2
-    function setPermit2(address _newPermit2)
-        external
-        onlyOwner
-        nonReentrant
-    {
-        if (_newPermit2 == address(0)) revert BurnerErrors.ZeroAddress();
-        permit2 = IPermit2(_newPermit2);
-        emit BurnerEvents.Permit2Changed(_newPermit2);
     }
 }
