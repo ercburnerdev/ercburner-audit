@@ -56,7 +56,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice The bridge fee divisor, as in 100/divisor = y%
     uint256 public nativeSentFeeDivisor;
     /// @notice The default referrer fee share, as in share/20 = y%
-    uint8 public referrerFeeShare;
+    uint256 public referrerFeeShare;
 
     /// @notice The partners addresses mapped to a specific fee share
     mapping(address partner => uint8 feeShare) public partners;
@@ -96,7 +96,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         address _feeCollector,
         uint256 _burnFeeDivisor,
         uint256 _nativeSentFeeDivisor,
-        uint8 _referrerFeeShare,
+        uint256 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
         bool _pauseBridge,
@@ -367,7 +367,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice Updates the referrer fee share
     /// @dev Can only be called by the owner
     /// @param _newReferrerFeeShare New fee share
-    function setReferrerFeeShare(uint8 _newReferrerFeeShare) 
+    function setReferrerFeeShare(uint256 _newReferrerFeeShare) 
         external 
         onlyOwner 
     {

@@ -87,7 +87,7 @@ library BurnerEvents {
     /// @notice Emitted when the referrer fee share is changed
     /// @param newReferrerFeeShare The new referrer fee share
     event ReferrerFeeShareChanged(
-        uint8 newReferrerFeeShare
+        uint256 newReferrerFeeShare
     );
 
     /// @notice Emitted when a partner is added

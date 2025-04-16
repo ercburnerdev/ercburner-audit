@@ -150,8 +150,8 @@ library BurnerErrors {
     /// @param provided The provided fee share
     /// @param maxAllowed The maximum allowed
     error FeeShareTooHigh(
-        uint8 provided,
-        uint8 maxAllowed
+        uint256 provided,
+        uint256 maxAllowed
     );
 
     /// @notice Emitted when the fee share is zero

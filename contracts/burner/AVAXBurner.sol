@@ -79,7 +79,7 @@ contract AVAXBurner is Burner {
         address _feeCollector,
         uint256 _burnFeeDivisor,
         uint256 _bridgeFeeDivisor,
-        uint8 _referrerFeeShare,
+        uint256 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
         bool _pauseBridge,
