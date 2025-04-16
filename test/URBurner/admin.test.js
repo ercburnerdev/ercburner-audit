@@ -124,7 +124,7 @@ describe("Burner - Admin Functions", function () {
 
     const recipientBalanceBefore = await ethers.provider.getBalance(env.user.address);
 
-    await env.burner.connect(env.owner).rescueETH(env.user.address, amount);
+    await env.burner.connect(env.owner).rescueNATIVE(env.user.address, amount);
 
 
     // Verify the ETH was transferred
@@ -135,7 +135,7 @@ describe("Burner - Admin Functions", function () {
 
   it("Should not allow non-owner to rescue ETH", async function () {
     const amount = ethers.parseEther("10");
-    await expect(env.burner.connect(env.user).rescueETH(env.user.address, amount))
+    await expect(env.burner.connect(env.user).rescueNATIVE(env.user.address, amount))
       .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
       .withArgs(env.user.address);
 

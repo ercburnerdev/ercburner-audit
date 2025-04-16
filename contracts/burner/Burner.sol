@@ -22,7 +22,7 @@ import { Address } from '@openzeppelin/contracts/utils/Address.sol';
 
 import { IUniversalRouter } from "./interfaces/IUniversalRouter.sol";
 import { IPermit2 } from "./interfaces/IPermit2.sol";
-import { IWETH } from "./interfaces/IWETH.sol";
+import { IWNATIVE } from "./interfaces/IWNATIVE.sol";
 import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
@@ -30,7 +30,7 @@ import { BurnerErrors } from "./libraries/BurnerErrors.sol";
 
 /// @title Universal Router Token Burner & Bridge
 /// @author ERC Burner Team
-/// @notice A contract that allows users to swap multiple tokens to ETH in a single transaction, and send to a different address, or through Relay's bridge.
+/// @notice A contract that allows users to swap multiple tokens to NATIVE in a single transaction, and send to a different address, or through Relay's bridge.
 /// @dev Uses Uniswap's Universal Router for token swaps and implements security measures
 /// @dev Uses Relay's RelayReceiver contract for bridge calls
 abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2StepUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
@@ -77,7 +77,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
 
     /// @notice Initializes the contract with required parameters
     /// @param _bridgeContract Address of the bridge contract
-    /// @param _WNATIVE Address of the wrapped native token (WETH)
+    /// @param _WNATIVE Address of the wrapped native token (WNATIVE)
     /// @param _USDC Address of the USDC token,
     /// @param _USDC_DECIMALS The number of decimals of USDC
     /// @param _feeCollector Address that will receive the fees
@@ -137,7 +137,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
         emit BurnerEvents.AdminChanged(_admin);
     }
 
-    /// @notice Receive function to allow the contract to receive ETH
+    /// @notice Receive function to allow the contract to receive NATIVE
     receive() external payable {}
 
     /// @notice Modifier to check if the referrer is valid
@@ -456,12 +456,12 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
         IERC20(_token).safeTransfer(_to, _amount);
     }
 
-    /// @notice Allows the owner to rescue stuck ETH
-    /// @dev Transfers any ETH stuck in the contract
+    /// @notice Allows the owner to rescue stuck NATIVE
+    /// @dev Transfers any NATIVE stuck in the contract
     /// @dev Can only be called by the owner
-    /// @param _to Address to send the ETH to
-    /// @param _amount Amount of ETH to rescue
-    function rescueETH(address _to, uint256 _amount)
+    /// @param _to Address to send the NATIVE to
+    /// @param _amount Amount of NATIVE to rescue
+    function rescueNATIVE(address _to, uint256 _amount)
         external
         onlyOwner
     {

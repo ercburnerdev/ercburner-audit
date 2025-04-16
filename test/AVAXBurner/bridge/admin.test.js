@@ -94,7 +94,7 @@ describe("Burner - Bridge Admin", function () {
     const amount = ethers.parseEther("0.5");
     
     // Rescue half of the ETH
-    await env.burner.connect(env.owner).rescueETH(env.owner.address, amount);
+    await env.burner.connect(env.owner).rescueNATIVE(env.owner.address, amount);
     
     const finalBalance = await ethers.provider.getBalance(env.owner.address);
     

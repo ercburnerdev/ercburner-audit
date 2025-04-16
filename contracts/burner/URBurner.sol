@@ -17,7 +17,7 @@ import { Commands } from "@uniswap/universal-router/contracts/libraries/Commands
 
 import { Burner } from "./Burner.sol";
 import { IUniversalRouter } from "./interfaces/IUniversalRouter.sol";
-import { IWETH } from "./interfaces/IWETH.sol";
+import { IWNATIVE } from "./interfaces/IWNATIVE.sol";
 import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
@@ -25,7 +25,7 @@ import { BurnerErrors } from "./libraries/BurnerErrors.sol";
 
 /// @title Universal Router Token Burner & Bridge
 /// @author ERC Burner Team
-/// @notice A contract that allows users to swap multiple tokens to ETH in a single transaction, and send to a different address, or through Relay's bridge.
+/// @notice A contract that allows users to swap multiple tokens to NATIVE in a single transaction, and send to a different address, or through Relay's bridge.
 /// @dev Uses Uniswap's Universal Router for token swaps and implements security measures
 /// @dev Uses Relay's RelayReceiver contract for bridge calls
 contract URBurner is Burner {
@@ -54,7 +54,7 @@ contract URBurner is Burner {
     /// @notice Initializes the contract with required parameters
     /// @param _routerContract Address of Uniswap's Universal Router contract
     /// @param _bridgeContract Address of the bridge contract
-    /// @param _WNATIVE Address of the wrapped native token (WETH)
+    /// @param _WNATIVE Address of the wrapped native token (WNATIVE)
     /// @param _USDC Address of the USDC token
     /// @param _USDC_DECIMALS The number of decimals of USDC
     /// @param _feeCollector Address that will receive the fees
@@ -90,14 +90,14 @@ contract URBurner is Burner {
     }
     
 
-    /// @notice Swaps multiple tokens for ETH in a single transaction
+    /// @notice Swaps multiple tokens for NATIVE in a single transaction
     /// @dev Processes multiple swaps and charges a fee on the total output
     /// @param params Array of swap parameters for each token
     /// @param _to The recipient address
-    /// @param bridge Whether to bridge the ETH
+    /// @param bridge Whether to bridge the NATIVE
     /// @param bridgeData The data to be sent to the bridge contract
     /// @param _referrer The referrer address
-    /// @return amountAfterFee The amount of ETH received after fees
+    /// @return amountAfterFee The amount of NATIVE received after fees
     function swapExactInputMultiple(
         SwapParams[] calldata params,
         address _to,
@@ -119,7 +119,7 @@ contract URBurner is Burner {
         if (bridge && bridgeData.length == 0) revert BurnerErrors.InvalidBridgeData();
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
         if (!bridge && msg.value > 0 && _to == msg.sender) revert BurnerErrors.RecipientIsSender();
-        
+
         uint256 totalAmountOut = 0;
         uint256 len = params.length;
 
@@ -193,8 +193,8 @@ contract URBurner is Burner {
         // Calculate the amount after fee.
         amountAfterFee = totalAmountOut - feeAmount;
 
-        // Convert WNATIVE to ETH.
-        IWETH(WNATIVE).withdraw(totalAmountOut);
+        // Convert WNATIVE to NATIVE.
+        IWNATIVE(WNATIVE).withdraw(totalAmountOut);
 
         // If msg.value is sent and less than the bridge fee divisor * 20 (Times 20 to ensure proper fee calculation), revert.
         if (msg.value > 0 && msg.value < nativeSentFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, nativeSentFeeDivisor * 20);
@@ -219,9 +219,9 @@ contract URBurner is Burner {
         // Send the fee to the fee collector.
         Address.sendValue(payable(feeCollector), feeAmount);
 
-        // If the bridge is true, send both the swapped ETH (net of fee) and the msg.value (net of fee) to the bridge contract.
+        // If the bridge is true, send both the swapped NATIVE (net of fee) and the msg.value (net of fee) to the bridge contract.
         if (bridge) {
-            // Send both the swapped ETH and the msg.value (net of fee) to the bridge contract.
+            // Send both the swapped NATIVE and the msg.value (net of fee) to the bridge contract.
             IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(bridgeData);
             // Redundant event, but kept for clarity and dashboards.
             emit BurnerEvents.BridgeSuccess(msg.sender, bridgeData, amountAfterFee, feeAmount + referrerFee);
@@ -229,7 +229,7 @@ contract URBurner is Burner {
             // Determine recipient: use _to if provided, otherwise default to msg.sender.
             address recipient = _to == address(0) ? msg.sender : _to;
             
-            // Send the swapped ETH (net of fee) to the recipient.
+            // Send the swapped NATIVE (net of fee) to the recipient.
             Address.sendValue(payable(recipient), amountAfterFee);
         }
 
