@@ -137,6 +137,9 @@ library BurnerErrors {
     /// @notice Emitted when the bridge is paused
     error BridgePaused();
 
+    /// @notice Emitted when the referral is paused
+    error ReferralPaused();
+
     /// @notice Emitted when the maximum tier is reached
     error MaximumTierReached();
 

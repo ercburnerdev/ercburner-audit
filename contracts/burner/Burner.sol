@@ -205,8 +205,10 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice User can pay for a better referrer fee share.
     /// @param _amount The amount of USDC to pay for the referrer fee share.
     function paidReferrer(uint256 _amount) 
-        external         
+        external
+        whenNotPaused
     {
+        if (pauseReferral) revert BurnerErrors.ReferralPaused();
         if (partners[msg.sender] > 0) revert BurnerErrors.ReferrerAlreadyPaid();
         uint256 allowance = IERC20(USDC).allowance(msg.sender, address(this));
         uint8 feeShare = 0;
@@ -236,7 +238,9 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _amount The amount of USDC to pay for the referrer fee share.
     function upgradeReferrer(uint256 _amount) 
         external 
+        whenNotPaused
     {
+        if (pauseReferral) revert BurnerErrors.ReferralPaused();
         uint256 currentShare = partners[msg.sender];
         if (currentShare == 0) revert BurnerErrors.ReferrerNotRegistered();
         
@@ -307,6 +311,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         external 
         whenNotPaused 
     {
+        if (pauseReferral) revert BurnerErrors.ReferralPaused();
         // If the caller is not the owner or the ADMIN_ROLE, revert.
         if(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender) && !hasRole(ADMIN_ROLE, msg.sender)) revert BurnerErrors.CallerNotAdminOrOwner(msg.sender);
         // If the partner is the zero address, revert.

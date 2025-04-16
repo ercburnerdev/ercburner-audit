@@ -195,4 +195,65 @@ describe("Burner - Referrer Admin", function () {
     
     expect(await env.burner.partners(env.user.address)).to.equal(10);
   });
+
+
+  it("Should not allow user to become a paid referrer when referral is paused", async function () {
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.burner.connect(env.owner).changePauseReferral();
+    await expect(env.burner.connect(env.user).paidReferrer(100n * 10n ** usdcDecimals))
+      .to.be.revertedWithCustomError(env.burner, "ReferralPaused");
+  });
+
+  it("Should not allow user to become a paid referrer when contract is paused", async function () {
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.burner.connect(env.owner).pause();
+    await expect(env.burner.connect(env.user).paidReferrer(100n * 10n ** usdcDecimals))
+      .to.be.revertedWithCustomError(env.burner, "EnforcedPause");
+  });
+
+  it("Should not allow user to upgradeReferrer when referral is paused", async function () {
+    // First become a 30% tier referrer
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
+    
+    // Now upgrade to 40% tier
+    await env.burner.connect(env.owner).changePauseReferral();
+
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    
+    await expect(env.burner.connect(env.user).upgradeReferrer(25n * 10n ** usdcDecimals))
+    .to.be.revertedWithCustomError(env.burner, "ReferralPaused");
+  });
+
+  it("Should not allow user to upgradeReferrer when contract is paused", async function () {
+    // First become a 30% tier referrer
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
+    
+    // Now upgrade to 40% tier
+    await env.burner.connect(env.owner).pause();
+
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    
+    await expect(env.burner.connect(env.user).upgradeReferrer(25n * 10n ** usdcDecimals))
+    .to.be.revertedWithCustomError(env.burner, "EnforcedPause");
+  });
+
+  it("Should not allow owner to add a partner when referral is paused", async function () {
+    await env.burner.connect(env.owner).changePauseReferral();
+    await expect(env.burner.connect(env.owner).putPartner(env.referrer.address, 10))
+      .to.be.revertedWithCustomError(env.burner, "ReferralPaused");
+  });
+
+  it("Should not allow owner to add a partner when contract is paused", async function () {
+    await env.burner.connect(env.owner).pause();
+    await expect(env.burner.connect(env.owner).putPartner(env.referrer.address, 10))
+      .to.be.revertedWithCustomError(env.burner, "EnforcedPause");
+  });
 }); 
