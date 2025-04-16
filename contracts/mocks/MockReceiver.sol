@@ -35,6 +35,11 @@ contract MockReceiver {
         emit FundsForwardedWithData(msg.data);
     }
 
+    function forward(bytes calldata data) external payable {
+        send(SOLVER, msg.value);
+        emit FundsForwardedWithData(data);
+    }
+
     // --- Internal methods ---
 
     function send(address to, uint256 value) internal {

@@ -40,12 +40,12 @@ library BurnerEvents {
 
     /// @notice Emitted when a bridge call is successful
     /// @param user The user who called the bridge
-    /// @param returnData The data returned by the bridge
+    /// @param data The data sent to the bridge
     /// @param amountAfterFee The amount of tokens received after fees
     /// @param bridgeFee The amount of fees collected
     event BridgeSuccess(
         address indexed user, 
-        bytes returnData, 
+        bytes data, 
         uint256 amountAfterFee, 
         uint256 bridgeFee
     );

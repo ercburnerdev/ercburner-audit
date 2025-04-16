@@ -17,6 +17,7 @@ import { Address } from '@openzeppelin/contracts/utils/Address.sol';
 import { Burner } from "./Burner.sol";
 import { ILBRouter } from './interfaces/ILBRouter.sol';
 import { IWETH } from "./interfaces/IWETH.sol";
+import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
 import { BurnerErrors } from "./libraries/BurnerErrors.sol";
@@ -70,7 +71,7 @@ contract AVAXBurner is Burner {
     /// @param _admin Address of the admin
     function initializeBurner(
         ILBRouter _swapRouter,
-        address _bridgeAddress,
+        IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
         address _feeCollector,
@@ -233,9 +234,9 @@ contract AVAXBurner is Burner {
         // If the bridge is true, send both the swapped ETH (net of fee) and the msg.value (net of fee) to the bridge contract.
         if (bridge) {
             // Send both the swapped ETH and the msg.value (net of fee) to the bridge contract.
-            bytes memory returnData = Address.functionCallWithValue(bridgeAddress, bridgeData, amountAfterFee);
+            IRelayReceiver(bridgeAddress).forward{value: amountAfterFee}(bridgeData);
             //Redundant event, but kept for clarity and dashboards.
-            emit BurnerEvents.BridgeSuccess(msg.sender, returnData, amountAfterFee, feeAmount + referrerFee);
+            emit BurnerEvents.BridgeSuccess(msg.sender, bridgeData, amountAfterFee, feeAmount + referrerFee);
         } else {
             // Determine recipient: use _to if provided, otherwise default to msg.sender.
             address recipient = _to == address(0) ? msg.sender : _to;

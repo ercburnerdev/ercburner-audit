@@ -43,7 +43,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -111,7 +111,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -191,7 +191,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -250,7 +250,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.9975"), // 99.75% of 1 ETH
         ethers.parseEther("0.0025")  // 0.25% of 1 ETH
       );
@@ -303,7 +303,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.9975"), // 99.75% of 1 ETH
         ethers.parseEther("0.0025")  // 0.25% of 1 ETH
       );
@@ -395,7 +395,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.662"), // 0.975 + 0.687 = 1.662 ETH
         ethers.parseEther("0.038")  // 0.0375 + 0.0005 = 0.038 ETH
       );
@@ -486,7 +486,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("2.44875"), // 1.95 + 0.49875 = 2.49875 ETH
         ethers.parseEther("0.05125")  // 0.05 + 0.00125 = 0.05125 ETH
       );
@@ -548,7 +548,7 @@ describe("Burner - Bridge with Referrer", function () {
         .to.emit(env.burner, "BridgeSuccess")
         .withArgs(
           env.user.address,
-          "0x",
+          bridgeData,
           expectedAmount,
           expectedFee
         );
@@ -606,7 +606,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         expectedAmount,
         expectedFee
       );
@@ -674,7 +674,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.07475"), // 0.975 + 0.09975 = 1.07475 ETH
         ethers.parseEther("0.02525")  // 0.025 + 0.00025 = 0.02525 ETH
       );
@@ -746,7 +746,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.07475"), // 0.975 + 0.09975 = 1.07475 ETH
         ethers.parseEther("0.02525")  // 0.025 + 0.00025 = 0.02525 ETH
       );
@@ -823,7 +823,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.07475"), // 0.975 + 0.09975 = 1.07475 ETH
         ethers.parseEther("0.02525")  // 0.025 + 0.00025 = 0.02525 ETH
       );
@@ -887,7 +887,7 @@ describe("Burner - Bridge with Referrer", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.07475"), // 0.975 + 0.09975 = 1.07475 ETH
         ethers.parseEther("0.02525")  // 0.025 + 0.00025 = 0.02525 ETH
       );

@@ -89,7 +89,7 @@ describe("Burner - Bridge Admin", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.owner.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.09975"), // 99.75% of 0.1 ETH (after 0.25% fee)
         ethers.parseEther("0.00025")  // 0.25% of 0.1 ETH fee
       );
