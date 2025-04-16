@@ -20,9 +20,6 @@ import { SafeERC20 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol';
 import { Address } from '@openzeppelin/contracts/utils/Address.sol';
 
-import { IUniversalRouter } from "./interfaces/IUniversalRouter.sol";
-import { IPermit2 } from "./interfaces/IPermit2.sol";
-import { IWNATIVE } from "./interfaces/IWNATIVE.sol";
 import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
@@ -177,7 +174,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
         Address.sendValue(payable(feeCollector), bridgeFee);
 
         // Call the bridge contract.
-        IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(_bridgeData);
+        bridgeContract.forward{value: amountAfterFee}(_bridgeData);
         emit BurnerEvents.BridgeSuccess(msg.sender, _bridgeData, amountAfterFee, bridgeFee + referrerFee);
     }
 
@@ -376,6 +373,8 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
         emit BurnerEvents.FeeCollectorChanged(_newFeeCollector);
     }
 
+    /// @notice Overrides the Ownable2StepUpgradeable acceptOwnership function
+    /// @dev Can only be called by the pending owner
     function acceptOwnership() public virtual override {
         address sender = _msgSender();
         if (pendingOwner() != sender) {

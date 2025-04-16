@@ -222,7 +222,7 @@ contract URBurner is Burner {
         // If the bridge is true, send both the swapped NATIVE (net of fee) and the msg.value (net of fee) to the bridge contract.
         if (bridge) {
             // Send both the swapped NATIVE and the msg.value (net of fee) to the bridge contract.
-            IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(bridgeData);
+            bridgeContract.forward{value: amountAfterFee}(bridgeData);
             // Redundant event, but kept for clarity and dashboards.
             emit BurnerEvents.BridgeSuccess(msg.sender, bridgeData, amountAfterFee, feeAmount + referrerFee);
         } else {
@@ -282,7 +282,7 @@ contract URBurner is Burner {
     function convertToUint256(bytes1 command)
         private
         pure
-        returns (uint256)
+        returns (uint256 commandUint)
     {
         return uint256(uint8(command));
     }
