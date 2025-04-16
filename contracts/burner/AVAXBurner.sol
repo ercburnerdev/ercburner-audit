@@ -66,7 +66,7 @@ contract AVAXBurner is Burner {
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _bridgeFeeDivisor Bridge fee divisor (1000 = 0.1%, 2000 = 0.05%)
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
-    /// @param _minGasForSwap Minimum gas required for a single swap
+    /// @param _minGasLeft Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
     /// @param _admin Address of the admin
     function initializeBurner(
@@ -79,7 +79,7 @@ contract AVAXBurner is Burner {
         uint256 _burnFeeDivisor,
         uint256 _bridgeFeeDivisor,
         uint256 _referrerFeeShare,
-        uint32 _minGasForSwap,
+        uint32 _minGasLeft,
         uint32 _maxTokensPerBurn,
         address _admin
     ) 
@@ -97,7 +97,7 @@ contract AVAXBurner is Burner {
             _burnFeeDivisor,
             _bridgeFeeDivisor,
             _referrerFeeShare,
-            _minGasForSwap,
+            _minGasLeft,
             _maxTokensPerBurn,
             _admin
         );
@@ -143,9 +143,9 @@ contract AVAXBurner is Burner {
             SwapParams calldata param = params[i];
             uint256 deadline = param.deadline;
             if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
-            
+
             // Short circuit if insufficient gas.
-            if (gasleft() < minGasForSwap) {
+            if (gasleft() < minGasLeft) {
                 emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Insufficient gas");
                 break;
             }

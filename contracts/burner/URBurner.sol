@@ -61,7 +61,7 @@ contract URBurner is Burner {
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
-    /// @param _minGasForSwap Minimum gas required for a single swap
+    /// @param _minGasLeft Minimum gas left for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
     /// @param _admin Address of the admin
     function initializeBurner(
@@ -74,7 +74,7 @@ contract URBurner is Burner {
         uint256 _burnFeeDivisor,
         uint256 _nativeSentFeeDivisor,
         uint256 _referrerFeeShare,
-        uint32 _minGasForSwap,
+        uint32 _minGasLeft,
         uint32 _maxTokensPerBurn,
         address _admin
     ) 
@@ -84,7 +84,7 @@ contract URBurner is Burner {
         if(address(_routerContract) == address(0)) revert BurnerErrors.ZeroAddress();
 
         routerContract = _routerContract;
-        super.initialize(_bridgeContract, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _admin);
+        super.initialize(_bridgeContract, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasLeft, _maxTokensPerBurn, _admin);
 
         emit BurnerEvents.RouterContractChanged(address(_routerContract));
     }
@@ -130,7 +130,7 @@ contract URBurner is Burner {
             if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
 
             // Skip processing if gas is insufficient or amount is zero
-            if (gasleft() < minGasForSwap) {
+            if (gasleft() < minGasLeft) {
                 emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Insufficient gas");
                 break;
             }

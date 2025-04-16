@@ -33,8 +33,8 @@ describe("Burner - Deployment", function () {
     expect(await env.burner.maxTokensPerBurn()).to.equal(50);
   });
   
-  it("Should deploy with correct min gas for swap", async function () {
-    expect(await env.burner.minGasForSwap()).to.equal(100000);
+  it("Should deploy with correct min gas left", async function () {
+    expect(await env.burner.minGasLeft()).to.equal(100000);
   });
   
   it("Should deploy with pauseBridge set to false", async function () {

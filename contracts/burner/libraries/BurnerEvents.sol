@@ -61,9 +61,9 @@ library BurnerEvents {
     );
 
     /// @notice Emitted when the minimum gas for a swap is changed
-    /// @param newMinGasForSwap The new minimum gas before swap
-    event MinGasForSwapChanged(
-        uint32 newMinGasForSwap
+    /// @param newMinGasLeft The new minimum gas before swap
+    event MinGasLeftChanged(
+        uint32 newMinGasLeft
     );
 
     /// @notice Emitted when the maximum number of tokens that can be burned in one transaction is changed

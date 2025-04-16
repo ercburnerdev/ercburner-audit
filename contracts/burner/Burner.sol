@@ -63,7 +63,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
 
     /// @notice The minimum gas required for a swap
     /// @dev This is to short circuit the burn function and prevent reverts cause by low gas.
-    uint32 public minGasForSwap;
+    uint32 public minGasLeft;
     
     /// @notice The maximum number of tokens that can be burned in one transaction. 
     /// @dev Has been calculated based on the max gas limit of blocks. Should over around 50-70% of the max gas limit.
@@ -83,7 +83,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
-    /// @param _minGasForSwap Minimum gas required for a single swap
+    /// @param _minGasLeft Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
     /// @param _admin Address of the admin
     function initialize(
@@ -95,7 +95,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         uint256 _burnFeeDivisor,
         uint256 _nativeSentFeeDivisor,
         uint256 _referrerFeeShare,
-        uint32 _minGasForSwap,
+        uint32 _minGasLeft,
         uint32 _maxTokensPerBurn,
         address _admin
     ) 
@@ -121,7 +121,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         referrerFeeShare = _referrerFeeShare;
         burnFeeDivisor = _burnFeeDivisor;
         nativeSentFeeDivisor = _nativeSentFeeDivisor;
-        minGasForSwap = _minGasForSwap;
+        minGasLeft = _minGasLeft;
         maxTokensPerBurn = _maxTokensPerBurn;
         // Setup administration roles
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -131,7 +131,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         emit BurnerEvents.BurnFeeDivisorChanged(_burnFeeDivisor);
         emit BurnerEvents.NativeSentFeeDivisorChanged(_nativeSentFeeDivisor);
         emit BurnerEvents.ReferrerFeeShareChanged(_referrerFeeShare);
-        emit BurnerEvents.MinGasForSwapChanged(_minGasForSwap);
+        emit BurnerEvents.MinGasLeftChanged(_minGasLeft);
         emit BurnerEvents.MaxTokensPerBurnChanged(_maxTokensPerBurn);
         emit BurnerEvents.AdminChanged(_admin);
     }
@@ -403,14 +403,14 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
 
     /// @notice Updates the minimum gas required for a swap
     /// @dev Can only be called by the owner
-    /// @param _newMinGasForSwap New minimum gas value
-    function setMinGasForSwap(uint32 _newMinGasForSwap)
+    /// @param _newMinGasLeft New minimum gas value
+    function setMinGasLeft(uint32 _newMinGasLeft)
         external
         onlyOwner
     {
-        if (_newMinGasForSwap == 0) revert BurnerErrors.ZeroMinGasForSwap();
-        minGasForSwap = _newMinGasForSwap;
-        emit BurnerEvents.MinGasForSwapChanged(_newMinGasForSwap);
+        if (_newMinGasLeft == 0) revert BurnerErrors.ZeroMinGasLeft();
+        minGasLeft = _newMinGasLeft;
+        emit BurnerEvents.MinGasLeftChanged(_newMinGasLeft);
     }
 
     /// @notice Updates the maximum number of tokens that can be burned in one transaction

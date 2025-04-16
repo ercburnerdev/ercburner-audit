@@ -124,8 +124,8 @@ library BurnerErrors {
     /// @notice Emitted when the address is zero
     error ZeroAddress();
 
-    /// @notice Emitted when the min gas for a swap is zero
-    error ZeroMinGasForSwap();
+    /// @notice Emitted when the min gas left is zero
+    error ZeroMinGasLeft();
 
     /// @notice Emitted when the max tokens per burn is zero
     error ZeroMaxTokensPerBurn();

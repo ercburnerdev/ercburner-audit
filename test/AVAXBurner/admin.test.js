@@ -143,26 +143,26 @@ describe("Burner - Admin Functions", function () {
 
   });
 
-  it("Should allow owner to set minGasForSwap", async function () {
-    const newMinGasForSwap = 122222;
-    await env.burner.connect(env.owner).setMinGasForSwap(newMinGasForSwap);
-    expect(await env.burner.minGasForSwap()).to.equal(newMinGasForSwap);
+  it("Should allow owner to set minGasLeft", async function () {
+    const newMinGasLeft = 122222;
+    await env.burner.connect(env.owner).setMinGasLeft(newMinGasLeft);
+    expect(await env.burner.minGasLeft()).to.equal(newMinGasLeft);
   });
 
-  it("Should not allow non-owner to set minGasForSwap", async function () {
-    const newMinGasForSwap = 122222;
-    await expect(env.burner.connect(env.user).setMinGasForSwap(newMinGasForSwap))
+  it("Should not allow non-owner to set minGasLeft", async function () {
+    const newMinGasLeft = 122222;
+    await expect(env.burner.connect(env.user).setMinGasLeft(newMinGasLeft))
       .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
       .withArgs(env.user.address);
   });
 
-  it("Should not allow setting minGasForSwap to 0", async function () {
-    await expect(env.burner.connect(env.owner).setMinGasForSwap(0))
-      .to.be.revertedWithCustomError(env.burner, "ZeroMinGasForSwap")
+  it("Should not allow setting minGasLeft to 0", async function () {
+    await expect(env.burner.connect(env.owner).setMinGasLeft(0))
+      .to.be.revertedWithCustomError(env.burner, "ZeroMinGasLeft")
   });
 
-  it("Should ensure a swap fails if gasleft is less than minGasForSwap", async function () {
-    await env.burner.connect(env.owner).setMinGasForSwap(1000000);
+  it("Should ensure a swap fails if gasleft is less than minGasLeft", async function () {
+    await env.burner.connect(env.owner).setMinGasLeft(1000000);
 
     let swap = await getSwapParamsV3(env);
 
