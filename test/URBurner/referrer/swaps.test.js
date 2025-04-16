@@ -429,9 +429,11 @@ describe("Burner - Referrer Swaps", function () {
 
   it("Should allow user who is a paid referrer to self-refer", async function () {
     // Setup user as a paid referrer (30% tier)
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
 
     const swap = await getSwapParamsV3(env);
 

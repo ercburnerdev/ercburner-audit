@@ -60,6 +60,7 @@ contract AVAXBurner is Burner {
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token
+    /// @param _USDC_DECIMALS The number of decimals of USDC
     /// @param _feeCollector Address that will receive the fees
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _bridgeFeeDivisor Bridge fee divisor (1000 = 0.1%, 2000 = 0.05%)
@@ -74,6 +75,7 @@ contract AVAXBurner is Burner {
         IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
+        uint256 _USDC_DECIMALS,
         address _feeCollector,
         uint256 _burnFeeDivisor,
         uint256 _bridgeFeeDivisor,
@@ -93,6 +95,7 @@ contract AVAXBurner is Burner {
             _bridgeAddress,
             _WNATIVE,
             _USDC,
+            _USDC_DECIMALS,
             _feeCollector,
             _burnFeeDivisor,
             _bridgeFeeDivisor,

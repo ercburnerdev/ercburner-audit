@@ -4,9 +4,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MockUSDC is ERC20 {
-    constructor() ERC20("Mock USDC", "USDC") {
+    uint8 public immutable DECIMALS;
+
+    constructor(uint8 _decimals) ERC20("Mock USDC", "USDC") {
         // Mint initial supply to deployer (1 billion USDC with 6 decimals)
-        _mint(msg.sender, 1_000_000_000 * 10**6);
+        _mint(msg.sender, 1_000_000 * 10 **_decimals);
+        DECIMALS = _decimals;
     }
 
     function mint(address to, uint256 amount) external {
@@ -17,8 +20,7 @@ contract MockUSDC is ERC20 {
         _burn(from, amount);
     }
 
-    // Override decimals to match USDC's 6 decimals
-    function decimals() public pure override returns (uint8) {
-        return 6;
+    function decimals() public view override returns (uint8) {
+        return DECIMALS;
     }
 } 

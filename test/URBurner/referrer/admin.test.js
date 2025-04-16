@@ -96,13 +96,14 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow user to become a paid referrer with the 30% tier", async function () {
     // Mint USDC for the user
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
     
     // Approve USDC for the burner contract
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
     
     // Register as a paid referrer
-    await expect(env.burner.connect(env.user).paidReferrer(25 * 10 ** 6))
+    await expect(env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerAdded")
       .withArgs(env.user.address);
     
@@ -111,13 +112,14 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow user to become a paid referrer with the 40% tier", async function () {
     // Mint USDC for the user
-    await env.mockUSDC.mint(env.user.address, 50 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 50n * 10n ** usdcDecimals);
     
     // Approve USDC for the burner contract
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50 * 10 ** 6);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50n * 10n ** usdcDecimals);
     
     // Register as a paid referrer
-    await expect(env.burner.connect(env.user).paidReferrer(50 * 10 ** 6))
+    await expect(env.burner.connect(env.user).paidReferrer(50n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerAdded")
       .withArgs(env.user.address);
     
@@ -126,13 +128,14 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow user to become a paid referrer with the 50% tier", async function () {
     // Mint USDC for the user
-    await env.mockUSDC.mint(env.user.address, 100 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 100n * 10n ** usdcDecimals);
     
     // Approve USDC for the burner contract
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 100 * 10 ** 6);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 100n * 10n ** usdcDecimals);
     
     // Register as a paid referrer
-    await expect(env.burner.connect(env.user).paidReferrer(100 * 10 ** 6))
+    await expect(env.burner.connect(env.user).paidReferrer(100n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerAdded")
       .withArgs(env.user.address);
     
@@ -141,15 +144,16 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow a 30% tier referrer to upgrade to 40% tier", async function () {
     // First become a 30% tier referrer
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
     
     // Now upgrade to 40% tier
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(25 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(25n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerFeeShareChanged")
       .withArgs(env.user.address, 8);
     
@@ -158,15 +162,16 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow a 30% tier referrer to upgrade to 50% tier", async function () {
     // First become a 30% tier referrer
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
     
     // Now upgrade to 50% tier
-    await env.mockUSDC.mint(env.user.address, 75 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 75 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 75n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 75n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(75 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(75n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerFeeShareChanged")
       .withArgs(env.user.address, 10);
     
@@ -175,15 +180,16 @@ describe("Burner - Referrer Admin", function () {
 
   it("Should allow a 40% tier referrer to upgrade to 50% tier", async function () {
     // First become a 40% tier referrer
-    await env.mockUSDC.mint(env.user.address, 50 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(50 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    await env.mockUSDC.mint(env.user.address, 50n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(50n * 10n ** usdcDecimals);
     
     // Now upgrade to 50% tier
-    await env.mockUSDC.mint(env.user.address, 50 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 50n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(50 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(50n * 10n ** usdcDecimals))
       .to.emit(env.burner, "PartnerFeeShareChanged")
       .withArgs(env.user.address, 10);
     

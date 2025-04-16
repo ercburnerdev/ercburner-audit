@@ -88,68 +88,80 @@ describe("Burner - Referrer Error Handling", function () {
   });
 
   it("Should revert when non-referrer tries to upgrade", async function () {
-    await env.mockUSDC.mint(env.user.address, 50 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+
+    await env.mockUSDC.mint(env.user.address, 50n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(50 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(50n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "ReferrerNotRegistered");
   });
 
   it("Should revert when 50% tier referrer tries to upgrade", async function () {
     // First become a 50% tier referrer
-    await env.mockUSDC.mint(env.user.address, 100 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 100 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(100 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+
+    await env.mockUSDC.mint(env.user.address, 100n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 100n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(100n * 10n ** usdcDecimals);
     
     // Try to upgrade again
-    await env.mockUSDC.mint(env.user.address, 50 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 50n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 50n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(50 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(50n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "MaximumTierReached");
   });
 
   it("Should revert when trying to become a paid referrer with insufficient USDC amount", async function () {
-    await env.mockUSDC.mint(env.user.address, 20 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
     
-    await expect(env.burner.connect(env.user).paidReferrer(25 * 10 ** 6))
+    await env.mockUSDC.mint(env.user.address, 20n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20n * 10n ** usdcDecimals);
+    
+    await expect(env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "InsufficientAllowanceOrAmount");
   });
 
   it("Should revert when trying to become a paid referrer with insufficient USDC allowance", async function () {
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
     
-    await expect(env.burner.connect(env.user).paidReferrer(25 * 10 ** 6))
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20n * 10n ** usdcDecimals);
+    
+    await expect(env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "InsufficientAllowanceOrAmount");
   });
 
   it("Should revert when trying to upgrade with insufficient USDC amount", async function () {
     // First become a 30% tier referrer
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
     
     // Try to upgrade with less than required
-    await env.mockUSDC.mint(env.user.address, 20 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 20n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 20n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(25 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(25n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "InsufficientAllowanceOrAmount");
   });
 
   it("Should revert when 30% tier referrer provides incorrect amount for upgrade", async function () {
     // First become a 30% tier referrer
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
     
     // Try to upgrade with incorrect amount
-    await env.mockUSDC.mint(env.user.address, 30 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 30 * 10 ** 6);
+    await env.mockUSDC.mint(env.user.address, 30n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 30n * 10n ** usdcDecimals);
     
-    await expect(env.burner.connect(env.user).upgradeReferrer(30 * 10 ** 6))
+    await expect(env.burner.connect(env.user).upgradeReferrer(30n * 10n ** usdcDecimals))
       .to.be.revertedWithCustomError(env.burner, "InsufficientAllowanceOrAmount");
   });
 

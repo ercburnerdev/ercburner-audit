@@ -46,6 +46,8 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     address public WNATIVE;
     /// @notice The USDC token address
     address public USDC;
+    /// @notice USDC Decimal multiplier (10 ** USDC_DECIMALS)
+    uint256 public USDC_DECIMALS_MULTIPLIER;
     /// @notice The fee collector address
     address public feeCollector;
 
@@ -75,7 +77,8 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice Initializes the contract with required parameters
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
-    /// @param _USDC Address of the USDC token
+    /// @param _USDC Address of the USDC token,
+    /// @param _USDC_DECIMALS The number of decimals of USDC
     /// @param _feeCollector Address that will receive the fees
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
@@ -89,6 +92,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
+        uint256 _USDC_DECIMALS,
         address _feeCollector,
         uint256 _burnFeeDivisor,
         uint256 _nativeSentFeeDivisor,
@@ -116,6 +120,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         bridgeAddress = _bridgeAddress;
         WNATIVE = _WNATIVE;
         USDC = _USDC;
+        USDC_DECIMALS_MULTIPLIER = 10 ** _USDC_DECIMALS;
         feeCollector = _feeCollector;
         referrerFeeShare = _referrerFeeShare;
         burnFeeDivisor = _burnFeeDivisor;
@@ -209,11 +214,11 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         // 100 USDC = 50% share
         // 50 USDC = 40% share
         // 25 USDC = 30% share
-        if (_amount == 100 * 10 ** 6 && allowance >= 100 * 10 ** 6) {
+        if (_amount == 100 * USDC_DECIMALS_MULTIPLIER && allowance >= 100 * USDC_DECIMALS_MULTIPLIER) {
             feeShare = 10; // 50% share
-        } else if (_amount == 50 * 10 ** 6 && allowance >= 50 * 10 ** 6) {
+        } else if (_amount == 50 * USDC_DECIMALS_MULTIPLIER && allowance >= 50 * USDC_DECIMALS_MULTIPLIER) {
             feeShare = 8; // 40% share
-        } else if (_amount == 25 * 10 ** 6 && allowance >= 25 * 10 ** 6) {
+        } else if (_amount == 25 * USDC_DECIMALS_MULTIPLIER && allowance >= 25 * USDC_DECIMALS_MULTIPLIER) {
             feeShare = 6; // 30% share
         } else {
             revert BurnerErrors.InsufficientAllowanceOrAmount(allowance, _amount);
@@ -242,20 +247,20 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         // For 30% tier, 75 USDC = 50% share
         // For 30% tier, 25 USDC = 40% share
         if (currentShare == 6) { // Current tier is 30%
-            if (_amount == 75 * 10 ** 6 && allowance >= 75 * 10 ** 6) {
+            if (_amount == 75 * USDC_DECIMALS_MULTIPLIER && allowance >= 75 * USDC_DECIMALS_MULTIPLIER) {
                 newFeeShare = 10; // 50% share
-                requiredAmount = 75 * 10 ** 6;
-            } else if (_amount == 25 * 10 ** 6 && allowance >= 25 * 10 ** 6) {
+                requiredAmount = 75 * USDC_DECIMALS_MULTIPLIER;
+            } else if (_amount == 25 * USDC_DECIMALS_MULTIPLIER && allowance >= 25 * USDC_DECIMALS_MULTIPLIER) {
                 newFeeShare = 8; // 40% share
-                requiredAmount = 25 * 10 ** 6;
+                requiredAmount = 25 * USDC_DECIMALS_MULTIPLIER;
             } else {
                 revert BurnerErrors.InsufficientAllowanceOrAmount(allowance, _amount);
             }
         } else if (currentShare == 8) { // Current tier is 40%
             // For 40% tier, 50 USDC = 50% share
-            if (_amount == 50 * 10 ** 6 && allowance >= 50 * 10 ** 6) {
+            if (_amount == 50 * USDC_DECIMALS_MULTIPLIER && allowance >= 50 * USDC_DECIMALS_MULTIPLIER) {
                 newFeeShare = 10; // 50% share
-                requiredAmount = 50 * 10 ** 6;
+                requiredAmount = 50 * USDC_DECIMALS_MULTIPLIER;
             } else {
                 revert BurnerErrors.InsufficientAllowanceOrAmount(allowance, _amount);
             }

@@ -7,7 +7,9 @@ async function deployTestEnvironment() {
   const mockWNATIVE = await MockWNATIVE.deploy();
 
   const MockUSDC = await ethers.getContractFactory("MockUSDC");
-  const mockUSDC = await MockUSDC.deploy();
+  const mockUSDC = await MockUSDC.deploy(18);
+
+  const usdcDecimals = parseInt(await mockUSDC.decimals());
 
   const MockToken = await ethers.getContractFactory("MockToken");
   const mockToken = await MockToken.deploy("MockToken", "MTK");
@@ -49,6 +51,7 @@ async function deployTestEnvironment() {
     await mockReceiver.getAddress(),
     await mockWNATIVE.getAddress(),
     await mockUSDC.getAddress(),
+    usdcDecimals,
     feeCollector.address,
     40,
     400,
@@ -70,9 +73,9 @@ async function deployTestEnvironment() {
   await mockWNATIVE.mint(await mockLBRouter.getAddress(), ethers.parseEther("1000"));
   await mockWNATIVE.connect(user).deposit({value: ethers.parseEther("500")});
   await mockWNATIVE.connect(user).approve(await burner.getAddress(), ethers.parseEther("1000"));
+  
+  await mockUSDC.mint(user.address, 1000n * 10n ** BigInt(usdcDecimals));
 
-  // Setup USDC
-  await mockUSDC.mint(user.address, 1000 * 10 ** 6);
 
   // Setup mock return amount
   await mockLBRouter.setReturnAmount(ethers.parseEther("1"));

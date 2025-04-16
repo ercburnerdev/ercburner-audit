@@ -55,6 +55,7 @@ contract URBurner is Burner {
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token
+    /// @param _USDC_DECIMALS The number of decimals of USDC
     /// @param _feeCollector Address that will receive the fees
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
     /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
@@ -69,6 +70,7 @@ contract URBurner is Burner {
         IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
+        uint256 _USDC_DECIMALS,
         address _feeCollector,
         uint256 _burnFeeDivisor,
         uint256 _nativeSentFeeDivisor,
@@ -84,7 +86,7 @@ contract URBurner is Burner {
         if(address(_universalRouter) == address(0)) revert BurnerErrors.ZeroAddress();
 
         universalRouter = _universalRouter;
-        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
+        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
 
         emit BurnerEvents.RouterChanged(address(_universalRouter));
     }
