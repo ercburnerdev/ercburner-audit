@@ -79,9 +79,9 @@ library BurnerEvents {
     );
 
     /// @notice Emitted when the bridge fee divisor is changed
-    /// @param newBridgeFeeDivisor The new bridge fee divisor
-    event BridgeFeeDivisorChanged(
-        uint256 newBridgeFeeDivisor
+    /// @param newNativeSentFeeDivisor The new bridge fee divisor
+    event NativeSentFeeDivisorChanged(
+        uint256 newNativeSentFeeDivisor
     );
 
     /// @notice Emitted when the referrer fee share is changed

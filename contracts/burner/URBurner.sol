@@ -56,7 +56,7 @@ contract URBurner is Burner {
     /// @param _USDC Address of the USDC token
     /// @param _feeCollector Address that will receive the fees
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
-    /// @param _bridgeFeeDivisor Bridge fee divisor (1000 = 0.1%, 2000 = 0.05%)
+    /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
     /// @param _minGasForSwap Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
@@ -70,7 +70,7 @@ contract URBurner is Burner {
         address _USDC,
         address _feeCollector,
         uint256 _burnFeeDivisor,
-        uint256 _bridgeFeeDivisor,
+        uint256 _nativeSentFeeDivisor,
         uint8 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
@@ -83,7 +83,7 @@ contract URBurner is Burner {
         if(address(_universalRouter) == address(0)) revert BurnerErrors.ZeroAddress();
 
         universalRouter = _universalRouter;
-        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _feeCollector, _burnFeeDivisor, _bridgeFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
+        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
 
         emit BurnerEvents.RouterChanged(address(_universalRouter));
     }
@@ -195,11 +195,11 @@ contract URBurner is Burner {
         IWETH(WNATIVE).withdraw(totalAmountOut);
 
         // If msg.value is sent and less than the bridge fee divisor * 20 (Times 20 to ensure proper fee calculation), revert.
-        if (msg.value > 0 && msg.value < bridgeFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, bridgeFeeDivisor * 20);
+        if (msg.value > 0 && msg.value < nativeSentFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, nativeSentFeeDivisor * 20);
 
         // If msg.value is sent, calculate the bridge fee and update amountAfterFee.
-        if (msg.value >= bridgeFeeDivisor * 20) {
-            uint256 bridgeFee = msg.value / bridgeFeeDivisor;
+        if (msg.value >= nativeSentFeeDivisor * 20) {
+            uint256 bridgeFee = msg.value / nativeSentFeeDivisor;
             uint256 valueAfterFee = msg.value - bridgeFee;
             feeAmount += bridgeFee;
             amountAfterFee += valueAfterFee;

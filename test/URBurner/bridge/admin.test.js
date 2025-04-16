@@ -9,16 +9,16 @@ describe("Burner - Bridge Admin", function () {
     env = await deployTestEnvironment();
   });
 
-  it("Should allow owner to set bridge fee divisor", async function () {
-    await expect(env.burner.connect(env.owner).setBridgeFeeDivisor(500))
-      .to.emit(env.burner, "BridgeFeeDivisorChanged")
+  it("Should allow owner to set native sent fee divisor", async function () {
+    await expect(env.burner.connect(env.owner).setNativeSentFeeDivisor(500))
+      .to.emit(env.burner, "NativeSentFeeDivisorChanged")
       .withArgs(500);
 
-    expect(await env.burner.bridgeFeeDivisor()).to.equal(500);
+    expect(await env.burner.nativeSentFeeDivisor()).to.equal(500);
   });
 
-  it("Should not allow non-owner to set bridge fee divisor", async function () {
-    await expect(env.burner.connect(env.user).setBridgeFeeDivisor(500))
+  it("Should not allow non-owner to set native sent fee divisor", async function () {
+    await expect(env.burner.connect(env.user).setNativeSentFeeDivisor(500))
       .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
       .withArgs(env.user.address);
   });
@@ -96,9 +96,9 @@ describe("Burner - Bridge Admin", function () {
     
     // Check fee collection
     const feeCollectorBalanceAfter = await ethers.provider.getBalance(env.feeCollector.address);
-    const bridgeFee = value / await env.burner.bridgeFeeDivisor();
+    const nativeSentFee = value / await env.burner.nativeSentFeeDivisor();
     
-    expect(feeCollectorBalanceAfter).to.equal(feeCollectorBalanceBefore + bridgeFee);
+    expect(feeCollectorBalanceAfter).to.equal(feeCollectorBalanceBefore + nativeSentFee);
   });
 
   it("Should revert when relayBridge called while bridgePaused", async function () {

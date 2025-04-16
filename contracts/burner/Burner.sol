@@ -51,7 +51,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice The burn fee divisor, as in 100/divisor = y%
     uint256 public burnFeeDivisor;
     /// @notice The bridge fee divisor, as in 100/divisor = y%
-    uint256 public bridgeFeeDivisor;
+    uint256 public nativeSentFeeDivisor;
     /// @notice The default referrer fee share, as in share/20 = y%
     uint8 public referrerFeeShare;
 
@@ -77,7 +77,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _USDC Address of the USDC token
     /// @param _feeCollector Address that will receive the fees
     /// @param _burnFeeDivisor Burn fee divisor (100 = 1%, 200 = 0.5%)
-    /// @param _bridgeFeeDivisor Bridge fee divisor (1000 = 0.1%, 2000 = 0.05%)
+    /// @param _nativeSentFeeDivisor Native sent fee divisor (1000 = 0.1%, 2000 = 0.05%)
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
     /// @param _minGasForSwap Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
@@ -90,7 +90,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         address _USDC,
         address _feeCollector,
         uint256 _burnFeeDivisor,
-        uint256 _bridgeFeeDivisor,
+        uint256 _nativeSentFeeDivisor,
         uint8 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
@@ -118,7 +118,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         feeCollector = _feeCollector;
         referrerFeeShare = _referrerFeeShare;
         burnFeeDivisor = _burnFeeDivisor;
-        bridgeFeeDivisor = _bridgeFeeDivisor;
+        nativeSentFeeDivisor = _nativeSentFeeDivisor;
         minGasForSwap = _minGasForSwap;
         maxTokensPerBurn = _maxTokensPerBurn;
         pauseBridge = _pauseBridge;
@@ -132,7 +132,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         emit BurnerEvents.BridgeAddressChanged(_bridgeAddress);
         emit BurnerEvents.PauseBridgeChanged(_pauseBridge);
         emit BurnerEvents.BurnFeeDivisorChanged(_burnFeeDivisor);
-        emit BurnerEvents.BridgeFeeDivisorChanged(_bridgeFeeDivisor);
+        emit BurnerEvents.NativeSentFeeDivisorChanged(_nativeSentFeeDivisor);
         emit BurnerEvents.ReferrerFeeShareChanged(_referrerFeeShare);
         emit BurnerEvents.MinGasForSwapChanged(_minGasForSwap);
         emit BurnerEvents.MaxTokensPerBurnChanged(_maxTokensPerBurn);
@@ -175,10 +175,10 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         if (pauseBridge) revert BurnerErrors.BridgePaused();
         if (msg.value == 0) revert BurnerErrors.ZeroValue();
         if (_bridgeData.length == 0) revert BurnerErrors.InvalidBridgeData();
-        if (msg.value < bridgeFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, bridgeFeeDivisor * 20);
+        if (msg.value < nativeSentFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, nativeSentFeeDivisor * 20);
 
         // Calculate the bridge fee and amount after fee.
-        uint256 bridgeFee = msg.value / bridgeFeeDivisor;
+        uint256 bridgeFee = msg.value / nativeSentFeeDivisor;
         uint256 amountAfterFee = msg.value - bridgeFee;
 
         uint256 referrerFee = 0;
@@ -345,17 +345,17 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
 
     /// @notice Updates the bridge fee divisor, 0.25% being the maximum
     /// @dev Can only be called by the owner
-    /// @param _newBridgeFeeDivisor New fee divisor
-    function setBridgeFeeDivisor(uint16 _newBridgeFeeDivisor) 
+    /// @param _newNativeSentFeeDivisor New fee divisor
+    function setNativeSentFeeDivisor(uint16 _newNativeSentFeeDivisor) 
         external 
         onlyOwner 
     {
         // If the new bridge fee divisor is less than 400, revert.
-        if (_newBridgeFeeDivisor < 400) revert BurnerErrors.FeeDivisorTooLow(_newBridgeFeeDivisor, 400);
+        if (_newNativeSentFeeDivisor < 400) revert BurnerErrors.FeeDivisorTooLow(_newNativeSentFeeDivisor, 400);
         // Update the bridge fee divisor.
-        bridgeFeeDivisor = _newBridgeFeeDivisor;
+        nativeSentFeeDivisor = _newNativeSentFeeDivisor;
 
-        emit BurnerEvents.BridgeFeeDivisorChanged(_newBridgeFeeDivisor);
+        emit BurnerEvents.NativeSentFeeDivisorChanged(_newNativeSentFeeDivisor);
     }
 
     /// @notice Updates the referrer fee share

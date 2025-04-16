@@ -20,8 +20,8 @@ describe("Burner - Deployment", function () {
     expect(await env.burner.burnFeeDivisor()).to.equal(40);
   });
 
-  it("Should deploy with correct bridge fee divisor", async function () {
-    expect(await env.burner.bridgeFeeDivisor()).to.equal(400);
+  it("Should deploy with correct native sent fee divisor", async function () {
+    expect(await env.burner.nativeSentFeeDivisor()).to.equal(400);
   });
 
   it("Should deploy with correct referrer fee share", async function () {

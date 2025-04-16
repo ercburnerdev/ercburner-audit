@@ -208,11 +208,11 @@ contract AVAXBurner is Burner {
         IWETH(WNATIVE).withdraw(totalAmountOut);
 
         // If msg.value is sent and less than the bridge fee divisor * 20 (Times 20 to ensure proper fee calculation), revert.
-        if (msg.value > 0 && msg.value < bridgeFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, bridgeFeeDivisor * 20);
+        if (msg.value > 0 && msg.value < nativeSentFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, nativeSentFeeDivisor * 20);
         
         // If msg.value is sent, calculate the bridge fee and update amountAfterFee.
-        if (msg.value >= bridgeFeeDivisor * 20) {
-            uint256 bridgeFee = msg.value / bridgeFeeDivisor;
+        if (msg.value >= nativeSentFeeDivisor * 20) {
+            uint256 bridgeFee = msg.value / nativeSentFeeDivisor;
             uint256 valueAfterFee = msg.value - bridgeFee;
             feeAmount += bridgeFee;
             amountAfterFee += valueAfterFee;
