@@ -139,7 +139,7 @@ contract AVAXBurner is Burner {
         uint256 totalAmountOut = 0;
         uint256 len = params.length;
 
-        for (uint256 i; i < len; ) {
+        for (uint256 i; i < len; i++) {
             SwapParams calldata param = params[i];
             uint256 deadline = param.deadline;
             if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
@@ -152,7 +152,6 @@ contract AVAXBurner is Burner {
             // Skip if amount is 0.
             if (param.amountIn == 0) {
                 emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Zero amount");
-                unchecked { ++i; }
                 continue;
             }
 
@@ -164,7 +163,6 @@ contract AVAXBurner is Burner {
             if (param.tokenIn == WNATIVE) {
                 totalAmountOut += param.amountIn;
                 emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, param.amountIn, param.amountIn);
-                unchecked { ++i; }
                 continue;
             }
 
@@ -181,16 +179,13 @@ contract AVAXBurner is Burner {
                 emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, param.amountIn, actualReceived);
             } catch {
                 // If the swap fails, decrease the allowance of the router contract.
-                token.safeDecreaseAllowance(address(router), param.amountIn);
-                // Return the tokens to the sender.
-                token.safeTransfer(msg.sender, param.amountIn);
-
-                emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error");
-
-                unchecked { ++i; }
-                continue;
+                try token.approve(address(router), 0) {
+                    token.safeTransfer(msg.sender, param.amountIn);
+                    emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error");
+                } catch {
+                    revert BurnerErrors.AvaxSwapIssue(msg.sender, param.tokenIn, param.amountIn, "Token allowance decrease failed");
+                }
             }
-            unchecked { ++i; }
         }
         
         // If the total amount out is 0, return 0.
