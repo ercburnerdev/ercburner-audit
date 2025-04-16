@@ -13,6 +13,7 @@ pragma solidity 0.8.24;
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { SafeERC20 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import { Address } from '@openzeppelin/contracts/utils/Address.sol';
+import { Commands } from "@uniswap/universal-router/contracts/libraries/Commands.sol";
 
 import { Burner } from "./Burner.sol";
 import { IUniversalRouter } from "./interfaces/IUniversalRouter.sol";
@@ -249,29 +250,39 @@ contract URBurner is Burner {
         // If the inputs length is over 2, revert.
         if (param.inputs.length != param.commands.length) revert BurnerErrors.MismatchedInputLength(param.inputs);
         // Get the command.
-        bytes1 commandSwap = param.commands[0];
-        bytes1 commandSweep;
+        uint256 commandSwap = convertToUint256(param.commands[0]);
+        uint256 commandSweep;
 
         address recipient = address(0);
         
         // Decode input based on command, to ensure the input is valid.
-        if (commandSwap == 0x00) {
+        if (commandSwap == Commands.V3_SWAP_EXACT_IN) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeV3(param);
-            commandSweep = param.commands[1];
-        } else if (commandSwap == 0x08) {
+            commandSweep = convertToUint256(param.commands[1]);
+        } else if (commandSwap == Commands.V2_SWAP_EXACT_IN) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeV2(param);
-            commandSweep = param.commands[1];
-        } else if (commandSwap == 0x0c) {
+            commandSweep = convertToUint256(param.commands[1]);
+        } else if (commandSwap == Commands.UNWRAP_WETH) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeWNATIVE(param);
+        } else {
+            revert BurnerErrors.InvalidCommand(commandSwap);
         }
 
         if (recipient != address(this)) revert BurnerErrors.InvalidRecipient(recipient);
 
-        if ((commandSwap == 0x00 || commandSwap == 0x08) && commandSweep == 0x04) {
+        if ((commandSwap == Commands.V3_SWAP_EXACT_IN || commandSwap == Commands.V2_SWAP_EXACT_IN) && commandSweep == Commands.SWEEP) {
             _validateAndDecodeSweep(param, tokenIn, amountIn);
         }
         
         return (tokenIn, amountIn);
+    }
+
+    function convertToUint256(bytes1 command)
+        private
+        pure
+        returns (uint256)
+    {
+        return uint256(uint8(command));
     }
 
     function _validateAndDecodeV3(SwapParams calldata param)

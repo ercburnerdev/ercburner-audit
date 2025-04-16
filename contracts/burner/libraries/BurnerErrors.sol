@@ -7,7 +7,7 @@ library BurnerErrors {
     /// @notice Emitted when an invalid command is used
     /// @param command The invalid command
     error InvalidCommand(
-        bytes1 command
+        uint256 command
     );
 
     /// @notice Emitted when an invalid recipient is used
