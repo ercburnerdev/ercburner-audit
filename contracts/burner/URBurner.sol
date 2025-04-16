@@ -43,7 +43,7 @@ contract URBurner is Burner {
     }
 
     /// @notice The Universal Router contract
-    IUniversalRouter public universalRouter;
+    IUniversalRouter public routerContract;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -51,8 +51,8 @@ contract URBurner is Burner {
     }
 
     /// @notice Initializes the contract with required parameters
-    /// @param _universalRouter Address of Uniswap's Universal Router contract
-    /// @param _bridgeAddress Address of the bridge contract
+    /// @param _routerContract Address of Uniswap's Universal Router contract
+    /// @param _bridgeContract Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token
     /// @param _USDC_DECIMALS The number of decimals of USDC
@@ -66,8 +66,8 @@ contract URBurner is Burner {
     /// @param _pauseReferral Whether to pause referral
     /// @param _admin Address of the admin
     function initializeBurner(
-        IUniversalRouter _universalRouter,
-        IRelayReceiver _bridgeAddress,
+        IUniversalRouter _routerContract,
+        IRelayReceiver _bridgeContract,
         address _WNATIVE,
         address _USDC,
         uint256 _USDC_DECIMALS,
@@ -82,13 +82,14 @@ contract URBurner is Burner {
         address _admin
     ) 
         external 
+        initializer
     {
-        if(address(_universalRouter) == address(0)) revert BurnerErrors.ZeroAddress();
+        if(address(_routerContract) == address(0)) revert BurnerErrors.ZeroAddress();
 
-        universalRouter = _universalRouter;
-        super.initialize(_bridgeAddress, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
+        routerContract = _routerContract;
+        super.initialize(_bridgeContract, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
 
-        emit BurnerEvents.RouterChanged(address(_universalRouter));
+        emit BurnerEvents.RouterContractChanged(address(_routerContract));
     }
     
 
@@ -153,7 +154,7 @@ contract URBurner is Burner {
                 continue;
             }
 
-            IERC20(tokenIn).safeTransferFrom(msg.sender, address(universalRouter), amountIn);
+            IERC20(tokenIn).safeTransferFrom(msg.sender, address(routerContract), amountIn);
             
             // Split commands and inputs into two separate arrays for the router
             bytes memory swapCommand = new bytes(1);
@@ -166,7 +167,7 @@ contract URBurner is Burner {
             bytes[] memory sweepInputs = new bytes[](1);
             sweepInputs[0] = param.inputs[1];
 
-            try universalRouter.execute(swapCommand, swapInputs, expiration) {
+            try routerContract.execute(swapCommand, swapInputs, expiration) {
                 // Calculate the actual amount received
                 uint256 postBalance = IERC20(WNATIVE).balanceOf(address(this));
                 if (postBalance < preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
@@ -176,7 +177,7 @@ contract URBurner is Burner {
 
                 emit BurnerEvents.SwapSuccess(msg.sender, tokenIn, amountIn, actualReceived);
             } catch {
-                try universalRouter.execute(sweepCommand, sweepInputs, expiration) {
+                try routerContract.execute(sweepCommand, sweepInputs, expiration) {
                     emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Router error");
                 } catch {
                     revert BurnerErrors.SwapIssue(preBalance, 0);
@@ -223,7 +224,7 @@ contract URBurner is Burner {
         // If the bridge is true, send both the swapped ETH (net of fee) and the msg.value (net of fee) to the bridge contract.
         if (bridge) {
             // Send both the swapped ETH and the msg.value (net of fee) to the bridge contract.
-            IRelayReceiver(bridgeAddress).forward{value: amountAfterFee}(bridgeData);
+            IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(bridgeData);
             // Redundant event, but kept for clarity and dashboards.
             emit BurnerEvents.BridgeSuccess(msg.sender, bridgeData, amountAfterFee, feeAmount + referrerFee);
         } else {
@@ -350,18 +351,5 @@ contract URBurner is Burner {
         if (tokenToSweep != tokenIn) revert BurnerErrors.InvalidTokenToSweep(tokenToSweep, tokenIn);
         if (sender != msg.sender) revert BurnerErrors.InvalidSweeper(sender, msg.sender);
         if (amountSweeped != amountIn) revert BurnerErrors.InvalidSweepAmount(amountSweeped, amountIn);
-    }
-    
-
-    /// @notice Updates the universal router address
-    /// @dev Can only be called by the owner
-    /// @param _newUniversalRouter New address to universal router
-    function setUniversalRouter(address _newUniversalRouter) 
-        external 
-        onlyOwner
-    {
-        if (_newUniversalRouter == address(0)) revert BurnerErrors.ZeroAddress();
-        universalRouter = IUniversalRouter(_newUniversalRouter);
-        emit BurnerEvents.RouterChanged(_newUniversalRouter);
     }
 }

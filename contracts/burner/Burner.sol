@@ -41,7 +41,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     /// @notice The bridge contract address
-    IRelayReceiver public bridgeAddress;
+    IRelayReceiver public bridgeContract;
     /// @notice The wrapped native token address
     address public WNATIVE;
     /// @notice The USDC token address
@@ -75,7 +75,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     bool public pauseReferral;
 
     /// @notice Initializes the contract with required parameters
-    /// @param _bridgeAddress Address of the bridge contract
+    /// @param _bridgeContract Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token,
     /// @param _USDC_DECIMALS The number of decimals of USDC
@@ -89,7 +89,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _pauseReferral Whether to pause referral
     /// @param _admin Address of the admin
     function initialize(
-        IRelayReceiver _bridgeAddress,
+        IRelayReceiver _bridgeContract,
         address _WNATIVE,
         address _USDC,
         uint256 _USDC_DECIMALS,
@@ -111,13 +111,13 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         __Pausable_init_unchained();
         __AccessControl_init_unchained();
 
-        if(address(_bridgeAddress) == address(0)) revert BurnerErrors.ZeroAddress();
+        if(address(_bridgeContract) == address(0)) revert BurnerErrors.ZeroAddress();
         if(_WNATIVE == address(0)) revert BurnerErrors.ZeroAddress();
         if(_USDC == address(0)) revert BurnerErrors.ZeroAddress();
         if(_feeCollector == address(0)) revert BurnerErrors.ZeroAddress();
         if(_admin == address(0)) revert BurnerErrors.ZeroAddress();
 
-        bridgeAddress = _bridgeAddress;
+        bridgeContract = _bridgeContract;
         WNATIVE = _WNATIVE;
         USDC = _USDC;
         USDC_DECIMALS_MULTIPLIER = 10 ** _USDC_DECIMALS;
@@ -135,7 +135,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         _grantRole(ADMIN_ROLE, _admin);
 
         emit BurnerEvents.FeeCollectorChanged(_feeCollector);
-        emit BurnerEvents.BridgeAddressChanged(address(_bridgeAddress));
+        emit BurnerEvents.BridgeContractChanged(address(_bridgeContract));
         emit BurnerEvents.PauseBridgeChanged(_pauseBridge);
         emit BurnerEvents.BurnFeeDivisorChanged(_burnFeeDivisor);
         emit BurnerEvents.NativeSentFeeDivisorChanged(_nativeSentFeeDivisor);
@@ -198,7 +198,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         Address.sendValue(payable(feeCollector), bridgeFee);
 
         // Call the bridge contract.
-        IRelayReceiver(bridgeAddress).forward{value: amountAfterFee}(_bridgeData);
+        IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(_bridgeData);
         emit BurnerEvents.BridgeSuccess(msg.sender, _bridgeData, amountAfterFee, bridgeFee + referrerFee);
     }
 
@@ -378,18 +378,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         // Update the referrer fee share.
         referrerFeeShare = _newReferrerFeeShare;
         emit BurnerEvents.ReferrerFeeShareChanged(_newReferrerFeeShare);
-    }
-
-    /// @notice Updates the bridge address
-    /// @dev Can only be called by the owner
-    /// @param _newBridgeAddress New address to bridge
-    function setBridgeAddress(IRelayReceiver _newBridgeAddress)
-        external
-        onlyOwner
-    {
-        if (address(_newBridgeAddress) == address(0)) revert BurnerErrors.ZeroAddress();
-        bridgeAddress = _newBridgeAddress;
-        emit BurnerEvents.BridgeAddressChanged(address(_newBridgeAddress));
     }
 
     /// @notice Updates the fee collector address

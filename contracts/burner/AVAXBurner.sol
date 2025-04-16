@@ -46,7 +46,7 @@ contract AVAXBurner is Burner {
     }
 
     /// @notice The Trader Joe's LB Router contract
-    ILBRouter public swapRouter;
+    ILBRouter public router;
     /// @notice The bridge contract address
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -56,7 +56,7 @@ contract AVAXBurner is Burner {
 
     /// @notice Initializes the contract with required parameters
     /// @dev Sets up the contract with initial configuration values
-    /// @param _swapRouter Address of the Swap Router contract
+    /// @param _router Address of the Swap Router contract
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WETH)
     /// @param _USDC Address of the USDC token
@@ -71,7 +71,7 @@ contract AVAXBurner is Burner {
     /// @param _pauseReferral Whether to pause referral
     /// @param _admin Address of the admin
     function initializeBurner(
-        ILBRouter _swapRouter,
+        ILBRouter _router,
         IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
@@ -89,7 +89,7 @@ contract AVAXBurner is Burner {
         external 
         initializer 
     {
-        if(address(_swapRouter) == address(0)) revert BurnerErrors.ZeroAddress();
+        if(address(_router) == address(0)) revert BurnerErrors.ZeroAddress();
 
         super.initialize(
             _bridgeAddress,
@@ -107,9 +107,9 @@ contract AVAXBurner is Burner {
             _admin
         );
 
-        swapRouter = _swapRouter;
+        router = _router;
 
-        emit BurnerEvents.RouterChanged(address(_swapRouter));
+        emit BurnerEvents.RouterContractChanged(address(_router));
     }
     
     /// @notice Swaps multiple tokens for ETH in a single transaction
@@ -174,10 +174,10 @@ contract AVAXBurner is Burner {
             }
 
             // Increase allowance for the swap router.
-            token.safeIncreaseAllowance(address(swapRouter), param.amountIn);
+            token.safeIncreaseAllowance(address(router), param.amountIn);
 
             // Execute the swap.
-            try swapRouter.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), expiration) returns (uint256 actualReceived) {
+            try router.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), expiration) returns (uint256 actualReceived) {
                 // If the amount received is 0, revert.
                 if (actualReceived <= 0) revert BurnerErrors.AvaxSwapIssue(msg.sender, param.tokenIn, param.amountIn, "Zero amount received");
                 // Add the amount received to the total amount out.
@@ -186,7 +186,7 @@ contract AVAXBurner is Burner {
                 emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, param.amountIn, actualReceived);
             } catch {
                 // If the swap fails, decrease the allowance of the router contract.
-                token.safeDecreaseAllowance(address(swapRouter), param.amountIn);
+                token.safeDecreaseAllowance(address(router), param.amountIn);
                 // Return the tokens to the sender.
                 token.safeTransfer(msg.sender, param.amountIn);
 
@@ -237,7 +237,7 @@ contract AVAXBurner is Burner {
         // If the bridge is true, send both the swapped ETH (net of fee) and the msg.value (net of fee) to the bridge contract.
         if (bridge) {
             // Send both the swapped ETH and the msg.value (net of fee) to the bridge contract.
-            IRelayReceiver(bridgeAddress).forward{value: amountAfterFee}(bridgeData);
+            IRelayReceiver(bridgeContract).forward{value: amountAfterFee}(bridgeData);
             //Redundant event, but kept for clarity and dashboards.
             emit BurnerEvents.BridgeSuccess(msg.sender, bridgeData, amountAfterFee, feeAmount + referrerFee);
         } else {
@@ -249,17 +249,5 @@ contract AVAXBurner is Burner {
 
         emit BurnerEvents.BurnSuccess(msg.sender, amountAfterFee, feeAmount + referrerFee);
         return amountAfterFee;
-    }
-
-    /// @notice Updates the universal router address
-    /// @dev Can only be called by the owner
-    /// @param _newSwapRouter New address to swap router
-    function setSwapRouter(address _newSwapRouter) 
-        external 
-        onlyOwner 
-    {
-        if (_newSwapRouter == address(0)) revert BurnerErrors.ZeroAddress();
-        swapRouter = ILBRouter(_newSwapRouter);
-        emit BurnerEvents.RouterChanged(_newSwapRouter);
     }
 }

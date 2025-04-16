@@ -23,24 +23,6 @@ describe("Burner - Bridge Admin", function () {
       .withArgs(env.user.address);
   });
 
-  it("Should allow owner to set bridge address", async function () {
-    const newBridgeAddress = "0x1000000000000000000000000000000000000001";
-    
-    await expect(env.burner.connect(env.owner).setBridgeAddress(newBridgeAddress))
-      .to.emit(env.burner, "BridgeAddressChanged")
-      .withArgs(newBridgeAddress);
-
-    expect(await env.burner.bridgeAddress()).to.equal(newBridgeAddress);
-  });
-
-  it("Should not allow non-owner to set bridge address", async function () {
-    const newBridgeAddress = "0x1000000000000000000000000000000000000001";
-    
-    await expect(env.burner.connect(env.user).setBridgeAddress(newBridgeAddress))
-      .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
-      .withArgs(env.user.address);
-  });
-
   it("Should allow owner to pause bridge", async function () {
     expect(await env.burner.pauseBridge()).to.equal(false);
     

@@ -110,10 +110,10 @@ library BurnerEvents {
         uint8 newFeeShare
     );
 
-    /// @notice Emitted when the Router is changed
-    /// @param newRouter The new Router address
-    event RouterChanged(
-        address indexed newRouter
+    /// @notice Emitted when the Router contract is changed
+    /// @param newRouterContract The new Router contract address
+    event RouterContractChanged(
+        address indexed newRouterContract
     );
 
     /// @notice Emitted when the fee collector is changed
@@ -122,10 +122,10 @@ library BurnerEvents {
         address indexed newFeeCollector
     );
 
-    /// @notice Emitted when the bridge address is changed
-    /// @param newBridgeAddress The new bridge address
-    event BridgeAddressChanged(
-        address indexed newBridgeAddress
+    /// @notice Emitted when the bridge contract is changed
+    /// @param newBridgeContract The new bridge contract address
+    event BridgeContractChanged(
+        address indexed newBridgeContract
     );
 
     /// @notice Emitted when the bridge is paused

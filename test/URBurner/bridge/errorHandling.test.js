@@ -167,12 +167,6 @@ describe("Burner - Bridge Error Handling", function () {
       .withArgs(insufficientValue, minRequired);
   });
 
-  it("Should revert when setting bridge address to zero address", async function () {
-    await expect(env.burner.connect(env.owner).setBridgeAddress(
-      "0x0000000000000000000000000000000000000000"
-    )).to.be.revertedWithCustomError(env.burner, "ZeroAddress");
-  });
-
   it("Should revert when native sent fee divisor is set to zero", async function () {
     await expect(env.burner.connect(env.owner).setNativeSentFeeDivisor(0))
       .to.be.revertedWithCustomError(env.burner, "FeeDivisorTooLow");
