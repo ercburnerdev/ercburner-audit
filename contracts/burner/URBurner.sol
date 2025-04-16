@@ -62,8 +62,6 @@ contract URBurner is Burner {
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
     /// @param _minGasForSwap Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
-    /// @param _pauseBridge Whether to pause bridge
-    /// @param _pauseReferral Whether to pause referral
     /// @param _admin Address of the admin
     function initializeBurner(
         IUniversalRouter _routerContract,
@@ -77,8 +75,6 @@ contract URBurner is Burner {
         uint256 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
-        bool _pauseBridge,
-        bool _pauseReferral,
         address _admin
     ) 
         external 
@@ -87,7 +83,7 @@ contract URBurner is Burner {
         if(address(_routerContract) == address(0)) revert BurnerErrors.ZeroAddress();
 
         routerContract = _routerContract;
-        super.initialize(_bridgeContract, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _pauseBridge, _pauseReferral, _admin);
+        super.initialize(_bridgeContract, _WNATIVE, _USDC, _USDC_DECIMALS, _feeCollector, _burnFeeDivisor, _nativeSentFeeDivisor, _referrerFeeShare, _minGasForSwap, _maxTokensPerBurn, _admin);
 
         emit BurnerEvents.RouterContractChanged(address(_routerContract));
     }

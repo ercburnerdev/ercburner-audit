@@ -58,8 +58,6 @@ async function deployTestEnvironment() {
     4,
     100000, // minGasForSwap
     50, // maxTokensPerBurn
-    false,
-    false,
     admin.address
   ], {initializer: "initializeBurner"});
 

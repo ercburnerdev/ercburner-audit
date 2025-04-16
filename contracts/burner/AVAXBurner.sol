@@ -67,8 +67,6 @@ contract AVAXBurner is Burner {
     /// @param _referrerFeeShare Referrer fee share (5 = 25%, 20 = 100%)
     /// @param _minGasForSwap Minimum gas required for a single swap
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
-    /// @param _pauseBridge Whether to pause bridge
-    /// @param _pauseReferral Whether to pause referral
     /// @param _admin Address of the admin
     function initializeBurner(
         ILBRouter _router,
@@ -82,8 +80,6 @@ contract AVAXBurner is Burner {
         uint256 _referrerFeeShare,
         uint32 _minGasForSwap,
         uint32 _maxTokensPerBurn,
-        bool _pauseBridge,
-        bool _pauseReferral,
         address _admin
     ) 
         external 
@@ -102,8 +98,6 @@ contract AVAXBurner is Burner {
             _referrerFeeShare,
             _minGasForSwap,
             _maxTokensPerBurn,
-            _pauseBridge,
-            _pauseReferral,
             _admin
         );
 
