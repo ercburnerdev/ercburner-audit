@@ -49,6 +49,9 @@ library BurnerErrors {
     /// @notice Emitted when the recipient must be set
     error RecipientMustBeSet();
 
+    /// @notice Emitted when the recipient is the sender
+    error RecipientIsSender();
+
     /// @notice Emitted when the bridge data is invalid
     error InvalidBridgeData();
 

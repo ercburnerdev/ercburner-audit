@@ -436,4 +436,23 @@ describe("Burner - Multiple Swaps With Recipient", function () {
     expect(recipientBalanceAfter)
       .to.equal(recipientBalanceBefore + (amountAfterFee));
   });
+
+  it("Should revert when recipient is user", async function () {
+    const swap = await getSwapParamsV3(env);
+
+    const swapParams = [{
+      tokenIn: swap.swapParams.tokenIn,
+      amountIn: swap.swapParams.amountIn,
+      amountOutMinimum: swap.swapParams.amountOutMinimum,
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
+    }];
+
+    expect(await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
+      env.user.address,
+      false,
+      "0x", 
+      "0x0000000000000000000000000000000000000000"
+    )).to.revertedWithCustomError(env.burner, "RecipientIsSender");
+  });
 }); 

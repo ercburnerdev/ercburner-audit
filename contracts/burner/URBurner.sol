@@ -118,7 +118,8 @@ contract URBurner is Burner {
         if (bridge && _to != address(0)) revert BurnerErrors.BridgeAndRecipientBothSet(_to);
         if (bridge && bridgeData.length == 0) revert BurnerErrors.InvalidBridgeData();
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
-
+        if (!bridge && msg.value > 0 && _to == msg.sender) revert BurnerErrors.RecipientIsSender();
+        
         uint256 totalAmountOut = 0;
         uint256 len = params.length;
 
