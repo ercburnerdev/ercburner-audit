@@ -37,7 +37,8 @@ describe("Burner - Referrer Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -136,7 +137,8 @@ describe("Burner - Referrer Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(

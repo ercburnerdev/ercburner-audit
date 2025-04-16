@@ -64,6 +64,7 @@ function prepareSwapExactInput(
 ) {
     const amountInBig = BigInt(amountIn);
     const amountOutMinBig = BigInt(amountOutMinimum);
+    const deadlineBigInt = BigInt(deadline);
     const abiCoder = new ethers.AbiCoder();
     let commandsString = "";
     let inputs = [];
@@ -107,12 +108,13 @@ function prepareSwapExactInput(
         amountIn,
         amountOutMinimum,
         commands: "0x" + commandsString,
-        inputs
+        inputs,
+        deadline: deadlineBigInt
     };
 }
 
 function URswapParamForWnative(tokenAddress, amountIn, incineratorAddress, sweepRecipient, wnativeAddress) {
-    const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 100000);
     return prepareSwapExactInput(
         "0x0c",
         incineratorAddress,

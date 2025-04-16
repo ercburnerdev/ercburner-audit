@@ -20,13 +20,15 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -84,13 +86,15 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -227,7 +231,8 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: mockTokenAddress,
         amountIn: amountIn,
         amountOutMinimum: amountOutMinimum,
-        path: path
+        path: path,
+        deadline: Math.floor(Date.now() / 1000) + 3600
       });
     }
 

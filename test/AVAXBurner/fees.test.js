@@ -53,7 +53,8 @@ describe("Burner - Fees", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     // Mock router to return 0.1 ETH
@@ -95,13 +96,15 @@ describe("Burner - Fees", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       }
     ];
 

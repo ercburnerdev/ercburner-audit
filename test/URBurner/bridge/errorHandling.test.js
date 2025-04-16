@@ -16,9 +16,9 @@ describe("Burner - Bridge Error Handling", function () {
     
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -35,9 +35,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when trying to set both bridge and recipient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -55,9 +55,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when trying to bridge with empty bridge data", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -72,9 +72,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when non-bridge transaction has non-empty bridge data", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -92,9 +92,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when non-bridge transaction with ETH has no recipient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -110,9 +110,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when bridge ETH value is insufficient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));

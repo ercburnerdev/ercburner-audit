@@ -58,6 +58,14 @@ library BurnerErrors {
     /// @notice Emitted when a referrer is not registered
     error ReferrerNotRegistered();
 
+    /// @notice Emitted when the deadline is invalid
+    /// @param deadline The deadline
+    /// @param blockTimestamp The block timestamp
+    error InvalidDeadline(
+        uint256 deadline,
+        uint256 blockTimestamp
+    );
+
     /// @notice Emitted when there is an issue with the swap
     /// @param preBalance The pre-balance
     /// @param postBalance The post-balance

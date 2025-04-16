@@ -25,7 +25,8 @@ contract MaliciousTokenReentrancyAvax is ERC20 {
                     pairBinSteps: new uint256[](0),
                     versions: new ILBRouter.Version[](0),
                     tokenPath: new IERC20[](0)
-                })
+                }),
+                deadline: block.timestamp + 1000
             });
             AVAXBurner.SwapParams[] memory paramsArray = new AVAXBurner.SwapParams[](1);
             paramsArray[0] = params;

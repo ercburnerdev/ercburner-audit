@@ -13,9 +13,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -71,9 +71,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -107,9 +107,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -139,9 +139,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Try to use self as referrer
@@ -161,9 +161,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -206,9 +206,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -251,9 +251,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -295,14 +295,14 @@ describe("Burner - Referrer Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -347,9 +347,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Create a random recipient address
@@ -400,9 +400,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap
@@ -448,9 +448,9 @@ describe("Burner - Referrer Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track ETH balances before swap

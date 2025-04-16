@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { deployTestEnvironment } = require("../setup");
 const { getSwapParamsV3, getSwapParamsV2, getSwapParamsWNATIVE } = require("../utils/getSwapParams");
+const { createSwapParams } = require("../utils/prepareSwaps");
 
 describe("Burner - Error Handling", function () {
   let env;
@@ -26,7 +27,8 @@ describe("Burner - Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
@@ -52,7 +54,8 @@ describe("Burner - Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
@@ -73,7 +76,8 @@ describe("Burner - Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
@@ -93,7 +97,8 @@ describe("Burner - Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
     // Get initial token balance
     const initialTokenBalance = await swap.token.balanceOf(env.user.address);
@@ -126,7 +131,8 @@ describe("Burner - Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     // Mock router to return 0
@@ -146,4 +152,32 @@ describe("Burner - Error Handling", function () {
         "Router error"
       );
   });
-}); 
+
+  it("should revert with InvalidDeadline when deadline is in the past", async function () {
+    const path = {
+      tokenPath: [await env.mockToken.getAddress(), await env.mockWNATIVE.getAddress()],
+      pairBinSteps: [20],
+      versions: [2]
+  };
+
+    // Prepare swap params
+    const swap = createSwapParams(
+      await env.mockToken.getAddress(),
+      ethers.parseEther("100"),
+      ethers.parseEther("0"),
+      await env.burner.getAddress(),
+      path,
+      Math.floor(Date.now() / 1000) - 1
+    );
+
+    // Attempt reentrancy attack
+    await expect(
+      env.burner.swapExactInputMultiple([swap],
+        "0x0000000000000000000000000000000000000000",
+        false,
+        "0x", 
+        "0x0000000000000000000000000000000000000000"
+     )
+    ).to.be.revertedWithCustomError(env.burner, "InvalidDeadline");
+  });
+});

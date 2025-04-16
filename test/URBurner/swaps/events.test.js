@@ -14,9 +14,9 @@ describe("Burner - Events", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Mock router to return 1 ETH
@@ -50,14 +50,14 @@ describe("Burner - Events", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -84,14 +84,14 @@ describe("Burner - Events", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -151,9 +151,9 @@ describe("Burner - Events", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Mock router to return 1 ETH
@@ -181,14 +181,14 @@ describe("Burner - Events", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -248,7 +248,8 @@ describe("Burner - Events", function () {
   
     const swapParams = [{
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
   
     // Mock router to return 1 ETH
@@ -295,7 +296,8 @@ describe("Burner - Events", function () {
   
     const swapParams = [{
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
   
     // Mock router to return 1 ETH
@@ -342,7 +344,8 @@ describe("Burner - Events", function () {
   
     const swapParams = [{
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
   
     // Mock router to return 1 ETH
@@ -389,7 +392,8 @@ describe("Burner - Events", function () {
   
     const swapParams = [{
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
   
     // Mock router to return 1 ETH

@@ -13,9 +13,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsWNATIVE(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -49,9 +49,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -89,9 +89,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsV2(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);

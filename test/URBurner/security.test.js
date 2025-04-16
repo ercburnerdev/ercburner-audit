@@ -33,7 +33,7 @@ describe("Burner - Security Tests", function () {
         encodedPath,
         false,
         env.user.address,
-        Math.floor(Date.now() / 1000) + 3600
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       // Attempt reentrancy attack

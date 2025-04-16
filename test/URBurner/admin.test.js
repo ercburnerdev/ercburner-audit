@@ -94,9 +94,9 @@ describe("Burner - Admin Functions", function () {
 
     let swap = await getSwapParamsV3(env);
     let swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(
@@ -166,7 +166,8 @@ describe("Burner - Admin Functions", function () {
 
     const swapParams = [{
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     const userTokenBalanceBefore = await env.mockToken.balanceOf(env.user.address);

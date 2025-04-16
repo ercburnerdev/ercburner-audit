@@ -97,7 +97,8 @@ describe("Burner - Admin Functions", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(
@@ -169,7 +170,8 @@ describe("Burner - Admin Functions", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const userTokenBalanceBefore = await env.mockToken.balanceOf(env.user.address);

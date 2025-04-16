@@ -40,6 +40,7 @@ contract URBurner is Burner {
     {
         bytes commands;
         bytes[] inputs;
+        uint256 deadline;
     }
 
     /// @notice The Universal Router contract
@@ -119,13 +120,14 @@ contract URBurner is Burner {
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
 
         uint256 totalAmountOut = 0;
-        uint48 expiration = uint48(block.timestamp + 900);
         uint256 len = params.length;
 
         for (uint256 i; i < len; i++) {
             SwapParams calldata param = params[i];
             // Validate and decode swap parameters
             (address tokenIn, uint256 amountIn) = _validateAndDecodeSwapParams(param);
+            uint256 deadline = param.deadline;
+            if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
 
             // Skip processing if gas is insufficient or amount is zero
             if (gasleft() < minGasForSwap) {
@@ -162,7 +164,7 @@ contract URBurner is Burner {
             bytes[] memory sweepInputs = new bytes[](1);
             sweepInputs[0] = param.inputs[1];
 
-            try routerContract.execute(swapCommand, swapInputs, expiration) {
+            try routerContract.execute(swapCommand, swapInputs, deadline) {
                 // Calculate the actual amount received
                 uint256 postBalance = IERC20(WNATIVE).balanceOf(address(this));
                 if (postBalance < preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
@@ -172,7 +174,7 @@ contract URBurner is Burner {
 
                 emit BurnerEvents.SwapSuccess(msg.sender, tokenIn, amountIn, actualReceived);
             } catch {
-                try routerContract.execute(sweepCommand, sweepInputs, expiration) {
+                try routerContract.execute(sweepCommand, sweepInputs, deadline) {
                     emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Router error");
                 } catch {
                     revert BurnerErrors.SwapIssue(preBalance, 0);

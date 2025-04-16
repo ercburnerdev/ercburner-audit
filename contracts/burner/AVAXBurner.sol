@@ -43,6 +43,7 @@ contract AVAXBurner is Burner {
         uint256 amountIn;
         uint256 amountOutMinimum;
         ILBRouter.Path path;
+        uint256 deadline;
     }
 
     /// @notice The Trader Joe's LB Router contract
@@ -136,12 +137,13 @@ contract AVAXBurner is Burner {
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
 
         uint256 totalAmountOut = 0;
-        uint48 expiration = uint48(block.timestamp + 900);
         uint256 len = params.length;
 
         for (uint256 i; i < len; ) {
             SwapParams calldata param = params[i];
-
+            uint256 deadline = param.deadline;
+            if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
+            
             // Short circuit if insufficient gas.
             if (gasleft() < minGasForSwap) {
                 emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Insufficient gas");
@@ -170,7 +172,7 @@ contract AVAXBurner is Burner {
             token.safeIncreaseAllowance(address(router), param.amountIn);
 
             // Execute the swap.
-            try router.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), expiration) returns (uint256 actualReceived) {
+            try router.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), deadline) returns (uint256 actualReceived) {
                 // If the amount received is 0, revert.
                 if (actualReceived <= 0) revert BurnerErrors.AvaxSwapIssue(msg.sender, param.tokenIn, param.amountIn, "Zero amount received");
                 // Add the amount received to the total amount out.

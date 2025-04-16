@@ -20,7 +20,8 @@ describe("Burner - Bridge Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track contract balances before swap
@@ -73,7 +74,8 @@ describe("Burner - Bridge Swaps", function () {
       tokenIn: swap.swapParams.tokenIn, // WNATIVE
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track contract balances before swap
@@ -124,13 +126,15 @@ describe("Burner - Bridge Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -271,13 +275,15 @@ describe("Burner - Bridge Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -342,19 +348,22 @@ describe("Burner - Bridge Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        deadline: swap1.swapParams.deadline
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        deadline: swap2.swapParams.deadline
       },
       {
         tokenIn: swap3.swapParams.tokenIn,
         amountIn: swap3.swapParams.amountIn,
         amountOutMinimum: swap3.swapParams.amountOutMinimum,
-        path: swap3.swapParams.path
+        path: swap3.swapParams.path,
+        deadline: swap3.swapParams.deadline
       }
     ];
 

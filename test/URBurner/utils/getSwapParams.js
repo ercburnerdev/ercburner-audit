@@ -25,7 +25,7 @@ async function getSwapParamsV3(env, amount = 100, minimumAmountOut = 0.1) {
             encodedPath,
             false,
             env.user.address,
-            Math.floor(Date.now() / 1000) + 3600
+            Math.floor(Date.now() / 1000) + 100000
         ),
         token: mockToken
     }
@@ -48,7 +48,7 @@ async function getSwapParamsV2(env, amount = 100, minimumAmountOut = 0.1) {
                 [await mockToken.getAddress(), await env.mockWNATIVE.getAddress()],
                 false,
                 env.user.address,
-                Math.floor(Date.now() / 1000) + 3600
+                Math.floor(Date.now() / 1000) + 100000
             ),
         token: mockToken
     }
@@ -95,12 +95,13 @@ async function getMixedV2V3SwapParams(env, amount = 100, minimumAmountOut = 0.1)
         index % 2 === 0 ? encodedPath : [await token.getAddress(), await env.mockWNATIVE.getAddress()],
         false,
         env.user.address,
-        Math.floor(Date.now() / 1000) + 3600
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       return {
         commands: swap.commands,
-        inputs: swap.inputs
+        inputs: swap.inputs,
+        deadline: swap.deadline
       };
     }));
 

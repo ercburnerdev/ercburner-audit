@@ -30,7 +30,8 @@ contract MaliciousTokenReentrancy is ERC20 {
             
             URBurner.SwapParams memory params = URBurner.SwapParams({
                 commands: "0x0004", // First command 0x00, second command 0x04
-                inputs: inputs
+                inputs: inputs,
+                deadline: block.timestamp + 1000
             });
             
             URBurner.SwapParams[] memory paramsArray = new URBurner.SwapParams[](1);

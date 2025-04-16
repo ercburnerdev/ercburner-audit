@@ -34,9 +34,9 @@ describe("Burner - Referrer Error Handling", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -132,9 +132,9 @@ describe("Burner - Referrer Error Handling", function () {
     
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(

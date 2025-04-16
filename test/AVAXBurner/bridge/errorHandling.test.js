@@ -19,7 +19,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -39,7 +40,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -60,7 +62,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -78,7 +81,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -99,7 +103,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -118,7 +123,8 @@ describe("Burner - Bridge Error Handling", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));

@@ -17,9 +17,9 @@ describe("Burner - Bridge Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track contract balances before swap
@@ -69,9 +69,9 @@ describe("Burner - Bridge Swaps", function () {
     const swap = await getSwapParamsWNATIVE(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn, // WNATIVE
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      deadline: swap.swapParams.deadline
     }];
 
     // Track contract balances before swap
@@ -119,14 +119,14 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -264,14 +264,14 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -333,19 +333,19 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       },
       {
-        tokenIn: swap3.swapParams.tokenIn,
         commands: swap3.swapParams.commands,
         inputs: swap3.swapParams.inputs,
+        deadline: swap3.swapParams.deadline
       }
     ];
 

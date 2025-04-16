@@ -16,7 +16,8 @@ describe("Burner - Basic Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -53,7 +54,8 @@ describe("Burner - Basic Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -94,7 +96,8 @@ describe("Burner - Basic Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      deadline: swap.swapParams.deadline
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);

@@ -10,14 +10,14 @@ const { ethers } = require("hardhat");
  * @param {object} path - Path object with tokenPath, pairBinSteps, versions
  * @returns {Object} Swap parameters
  */
-function createSwapParams(tokenIn, amountIn, amountOutMinimum, recipient, path) {
+function createSwapParams(tokenIn, amountIn, amountOutMinimum, recipient, path, deadline = null) {
     return {
         tokenIn,
         amountIn: BigInt(amountIn),
         amountOutMinimum: BigInt(amountOutMinimum),
         path,
         to: recipient,
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 600)
+        deadline: deadline ? BigInt(deadline) : BigInt(Math.floor(Date.now() / 1000) + 100000)
     };
 }
 
@@ -40,7 +40,7 @@ function createNativeSwapParams(tokenAddress, amountIn, recipient) {
             versions: []
         },
         to: recipient,
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 600)
+        deadline: BigInt(Math.floor(Date.now() / 1000) + 100000)
     };
 }
 

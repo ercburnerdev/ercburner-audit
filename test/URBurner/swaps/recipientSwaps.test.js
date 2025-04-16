@@ -17,14 +17,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -89,14 +89,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
@@ -247,11 +247,10 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         i % 2 === 0 ? encodedPath : [await mockTokens[i].getAddress(), await env.mockWNATIVE.getAddress()],
         false,
         env.user.address,
-        Math.floor(Date.now() / 1000) + 3600
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       swapParams.push({
-        tokenIn: swap.tokenIn,
         commands: swap.commands,
         inputs: swap.inputs,
         deadline: swap.deadline
@@ -350,14 +349,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        deadline: swap1.swapParams.deadline
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        deadline: swap2.swapParams.deadline
       }
     ];
 
