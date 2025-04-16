@@ -344,8 +344,7 @@ contract URBurner is Burner {
     /// @param _newUniversalRouter New address to universal router
     function setUniversalRouter(address _newUniversalRouter) 
         external 
-        onlyOwner 
-        nonReentrant 
+        onlyOwner
     {
         if (_newUniversalRouter == address(0)) revert BurnerErrors.ZeroAddress();
         universalRouter = IUniversalRouter(_newUniversalRouter);

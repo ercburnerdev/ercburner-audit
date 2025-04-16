@@ -253,7 +253,6 @@ contract AVAXBurner is Burner {
     function setSwapRouter(address _newSwapRouter) 
         external 
         onlyOwner 
-        nonReentrant 
     {
         if (_newSwapRouter == address(0)) revert BurnerErrors.ZeroAddress();
         swapRouter = ILBRouter(_newSwapRouter);

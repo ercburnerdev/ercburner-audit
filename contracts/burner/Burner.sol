@@ -197,8 +197,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @notice User can pay for a better referrer fee share.
     /// @param _amount The amount of USDC to pay for the referrer fee share.
     function paidReferrer(uint256 _amount) 
-        external 
-        nonReentrant 
+        external         
     {
         if (partners[msg.sender] > 0) revert BurnerErrors.ReferrerAlreadyPaid();
         uint256 allowance = IERC20(USDC).allowance(msg.sender, address(this));
@@ -229,7 +228,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _amount The amount of USDC to pay for the referrer fee share.
     function upgradeReferrer(uint256 _amount) 
         external 
-        nonReentrant 
     {
         uint256 currentShare = partners[msg.sender];
         if (currentShare == 0) revert BurnerErrors.ReferrerNotRegistered();
@@ -299,7 +297,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _feeShare The fee share, from 1 to 20 (1 = 5%, 20 = 100%)
     function putPartner(address _partner, uint8 _feeShare) 
         external 
-        nonReentrant 
         whenNotPaused 
     {
         // If the caller is not the owner or the ADMIN_ROLE, revert.
@@ -323,7 +320,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function removePartner(address _partner) 
         external 
         onlyOwner 
-        nonReentrant 
     {
         // Delete the partner's fee share.
         delete partners[_partner];
@@ -335,8 +331,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     /// @param _newBurnFeeDivisor New fee divisor
     function setBurnFeeDivisor(uint16 _newBurnFeeDivisor) 
         external 
-        onlyOwner 
-        nonReentrant 
+        onlyOwner
     {
         // If the new burn fee divisor is less than 40, revert.
         if (_newBurnFeeDivisor < 40) revert BurnerErrors.FeeDivisorTooLow(_newBurnFeeDivisor, 40);
@@ -352,7 +347,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setBridgeFeeDivisor(uint16 _newBridgeFeeDivisor) 
         external 
         onlyOwner 
-        nonReentrant 
     {
         // If the new bridge fee divisor is less than 400, revert.
         if (_newBridgeFeeDivisor < 400) revert BurnerErrors.FeeDivisorTooLow(_newBridgeFeeDivisor, 400);
@@ -368,7 +362,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setReferrerFeeShare(uint8 _newReferrerFeeShare) 
         external 
         onlyOwner 
-        nonReentrant 
     {
         // If the new referrer fee share is greater than 20, revert.
         if (_newReferrerFeeShare > 20) revert BurnerErrors.FeeShareTooHigh(_newReferrerFeeShare, 20);
@@ -385,7 +378,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setBridgeAddress(address _newBridgeAddress)
         external
         onlyOwner
-        nonReentrant
     {
         if (_newBridgeAddress == address(0)) revert BurnerErrors.ZeroAddress();
         bridgeAddress = _newBridgeAddress;
@@ -398,7 +390,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setFeeCollector(address _newFeeCollector)
         external
         onlyOwner
-        nonReentrant
     {
         if (_newFeeCollector == address(0)) revert BurnerErrors.ZeroAddress();
         feeCollector = _newFeeCollector;
@@ -412,7 +403,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setAdmin(address _oldAdmin, address _newAdmin)
         external
         onlyOwner
-        nonReentrant
     {
         // If the new admin is the zero address, revert.
         if (_newAdmin == address(0)) revert BurnerErrors.ZeroAddress();
@@ -438,7 +428,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setMinGasForSwap(uint32 _newMinGasForSwap)
         external
         onlyOwner
-        nonReentrant
     {
         if (_newMinGasForSwap == 0) revert BurnerErrors.ZeroMinGasForSwap();
         minGasForSwap = _newMinGasForSwap;
@@ -451,7 +440,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function setMaxTokensPerBurn(uint32 _newMaxTokensPerBurn)
         external
         onlyOwner
-        nonReentrant
     {
         if (_newMaxTokensPerBurn == 0) revert BurnerErrors.ZeroMaxTokensPerBurn();
         maxTokensPerBurn = _newMaxTokensPerBurn;
@@ -486,7 +474,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function rescueETH(address _to, uint256 _amount)
         external
         onlyOwner
-        nonReentrant
     {
         if (_to == address(0)) revert BurnerErrors.ZeroAddress();
         Address.sendValue(payable(_to), _amount);
@@ -497,7 +484,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function changePauseBridge()
         external
         onlyOwner
-        nonReentrant
     {
         pauseBridge = !pauseBridge;
         emit BurnerEvents.PauseBridgeChanged(pauseBridge);
@@ -508,7 +494,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function changePauseReferral()
         external
         onlyOwner
-        nonReentrant
     {
         pauseReferral = !pauseReferral;
         emit BurnerEvents.PauseReferralChanged(pauseReferral);
@@ -519,7 +504,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function pause()
         external
         onlyOwner
-        nonReentrant
     {
         _pause();
     }
@@ -529,7 +513,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
     function unpause()
         external
         onlyOwner
-        nonReentrant
     {
         _unpause();
     }
