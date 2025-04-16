@@ -169,8 +169,10 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         external 
         payable 
         nonReentrant 
+        whenNotPaused
         referrerCheck(_referrer) 
     {
+        if (pauseBridge) revert BurnerErrors.BridgePaused();
         if (msg.value == 0) revert BurnerErrors.ZeroValue();
         if (_bridgeData.length == 0) revert BurnerErrors.InvalidBridgeData();
         if (msg.value < bridgeFeeDivisor * 20) revert BurnerErrors.InsufficientValue(msg.value, bridgeFeeDivisor * 20);

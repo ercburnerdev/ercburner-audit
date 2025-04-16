@@ -101,6 +101,46 @@ describe("Burner - Bridge Admin", function () {
     expect(feeCollectorBalanceAfter).to.equal(feeCollectorBalanceBefore + bridgeFee);
   });
 
+  it("Should revert when relayBridge called while bridgePaused", async function () {
+    await env.burner.connect(env.owner).changePauseBridge();
+    expect(await env.burner.pauseBridge()).to.equal(true);
+
+    const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
+    const value = ethers.parseEther("0.1");
+    
+    // Track ETH balances before relay
+    const feeCollectorBalanceBefore = await ethers.provider.getBalance(env.feeCollector.address);
+    
+    // Call relayBridge
+    await expect(env.burner.connect(env.owner).relayBridge(
+      bridgeData,
+      "0x0000000000000000000000000000000000000000", // No referrer
+      { value }
+    ))
+    .to.be.revertedWithCustomError(env.burner, "BridgePaused");
+  });
+
+  it("Should revert when relayBridge called while contract is paused", async function () {
+    await env.burner.connect(env.owner).pause();
+    expect(await env.burner.paused()).to.equal(true);
+
+    const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
+    const value = ethers.parseEther("0.1");
+    
+    // Track ETH balances before relay
+    const feeCollectorBalanceBefore = await ethers.provider.getBalance(env.feeCollector.address);
+    
+    // Call relayBridge
+    await expect(env.burner.connect(env.owner).relayBridge(
+      bridgeData,
+      "0x0000000000000000000000000000000000000000", // No referrer
+      { value }
+    ))
+    .to.be.revertedWithCustomError(env.burner, "EnforcedPause");
+  });
+
+  
+
   it("Should correctly rescue ETH from contract", async function () {
     // First send some ETH to the contract
     await env.user.sendTransaction({
