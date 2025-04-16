@@ -136,9 +136,6 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         emit BurnerEvents.AdminChanged(_admin);
     }
 
-    /// @notice Fallback function to allow the contract to receive ETH
-    fallback() external payable {}
-
     /// @notice Receive function to allow the contract to receive ETH
     receive() external payable {}
 
