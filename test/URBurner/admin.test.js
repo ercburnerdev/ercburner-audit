@@ -327,4 +327,52 @@ describe("Burner - Admin Functions", function () {
       .to.be.revertedWithCustomError(env.burner, "CallerNotAdminOrOwner")
       .withArgs(env.user.address);
   });
+
+  it("Should allow owner to transfer ownership", async function () {
+    const newOwner = env.recipient.address;
+
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await env.burner.connect(env.recipient).acceptOwnership();
+    expect(await env.burner.owner()).to.equal(newOwner);
+  });
+
+  it("Should not allow non-owner to transfer ownership", async function () {
+    const newOwner = env.recipient.address;
+    await expect(env.burner.connect(env.user).transferOwnership(newOwner))
+      .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
+      .withArgs(env.user.address);
+  });
+
+  it("Should not allow non-owner to accept ownership", async function () {
+    const newOwner = env.recipient.address;
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await expect(env.burner.connect(env.user).acceptOwnership())
+      .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
+      .withArgs(env.user.address);
+  });
+  
+  it("Should allow owner to transfer ownership and default_admin_role", async function () {
+    const DEFAULT_ADMIN_ROLE = await env.burner.DEFAULT_ADMIN_ROLE();
+    const owner = await env.burner.owner();
+
+    expect(owner).to.equal(env.owner.address);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.owner.address)).to.equal(true);
+
+    const newOwner = env.recipient.address;
+
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await env.burner.connect(env.recipient).acceptOwnership();
+
+    expect(await env.burner.owner()).to.equal(newOwner);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.recipient.address)).to.equal(true);
+    
+    expect(await env.burner.owner()).to.not.equal(env.owner.address);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.owner.address)).to.equal(false);
+  });
 });

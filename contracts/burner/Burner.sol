@@ -12,8 +12,9 @@ pragma solidity 0.8.24;
 
 import { Initializable } from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import { ReentrancyGuardUpgradeable } from '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
-import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import { Ownable2StepUpgradeable } from '@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol';
 import { AccessControlUpgradeable } from '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+
 import { IERC20 } from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import { SafeERC20 } from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import { PausableUpgradeable } from '@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol';
@@ -32,7 +33,7 @@ import { BurnerErrors } from "./libraries/BurnerErrors.sol";
 /// @notice A contract that allows users to swap multiple tokens to ETH in a single transaction, and send to a different address, or through Relay's bridge.
 /// @dev Uses Uniswap's Universal Router for token swaps and implements security measures
 /// @dev Uses Relay's RelayReceiver contract for bridge calls
-abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
+abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2StepUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
     using BurnerErrors for *;
     using BurnerEvents for *;
@@ -373,6 +374,16 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, OwnableUp
         if (_newFeeCollector == address(0)) revert BurnerErrors.ZeroAddress();
         feeCollector = _newFeeCollector;
         emit BurnerEvents.FeeCollectorChanged(_newFeeCollector);
+    }
+
+    function acceptOwnership() public virtual override {
+        address sender = _msgSender();
+        if (pendingOwner() != sender) {
+            revert OwnableUnauthorizedAccount(sender);
+        }
+        _revokeRole(DEFAULT_ADMIN_ROLE, owner());
+        _transferOwnership(sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, sender);
     }
 
     /// @notice Updates the admin address
