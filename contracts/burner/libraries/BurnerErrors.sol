@@ -180,30 +180,6 @@ library BurnerErrors {
         address token
     );
 
-    /// @notice Emitted when the sender is invalid
-    /// @param sender The invalid sender address
-    /// @param expected The expected sender address
-    error InvalidSweeper(
-        address sender,
-        address expected
-    );
-
-    /// @notice Emitted when the amount is invalid
-    /// @param provided The provided amount
-    /// @param expected The expected amount
-    error InvalidSweepAmount(
-        uint256 provided,
-        uint256 expected
-    );
-
-    /// @notice Emitted when the token to sweep is invalid
-    /// @param token The invalid token address
-    /// @param expected The expected token address
-    error InvalidTokenToSweep(
-        address token,
-        address expected
-    );
-
     /// @notice Emitted when payerIsUser is true, should be false
     error PayerIsUser();
 }

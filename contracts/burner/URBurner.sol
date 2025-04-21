@@ -154,19 +154,8 @@ contract URBurner is Burner {
             }
 
             IERC20(tokenIn).safeTransferFrom(msg.sender, address(routerContract), amountIn);
-            
-            // Split commands and inputs into two separate arrays for the router
-            bytes memory swapCommand = new bytes(1);
-            swapCommand[0] = param.commands[0];
-            bytes[] memory swapInputs = new bytes[](1);
-            swapInputs[0] = param.inputs[0];
-            
-            bytes memory sweepCommand = new bytes(1);
-            sweepCommand[0] = param.commands[1];
-            bytes[] memory sweepInputs = new bytes[](1);
-            sweepInputs[0] = param.inputs[1];
 
-            try routerContract.execute(swapCommand, swapInputs, deadline) {
+            try routerContract.execute(param.commands, param.inputs, deadline) {
                 // Calculate the actual amount received
                 uint256 postBalance = IERC20(WNATIVE).balanceOf(address(this));
                 if (postBalance <= preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
@@ -176,7 +165,8 @@ contract URBurner is Burner {
 
                 emit BurnerEvents.SwapSuccess(msg.sender, tokenIn, amountIn, actualReceived);
             } catch {
-                try routerContract.execute(sweepCommand, sweepInputs, deadline) {
+                (bytes memory command, bytes[] memory sweepInputs) = _createSweepParams(tokenIn, amountIn);
+                try routerContract.execute(command, sweepInputs, deadline) {
                     emit BurnerEvents.SwapFailed(msg.sender, tokenIn, amountIn, "Router error");
                 } catch {
                     revert BurnerErrors.SwapIssue(preBalance, 0);
@@ -248,44 +238,29 @@ contract URBurner is Burner {
         view 
         returns (address tokenIn, uint256 amountIn) 
     {
-        // If the commands length is over 2, revert.
-        if (param.commands.length > 2) revert BurnerErrors.InvalidCommands(param.commands);
-        // If the inputs length is over 2, revert.
-        if (param.inputs.length != param.commands.length) revert BurnerErrors.MismatchedInputLength(param.inputs);
+        // If the commands length is different from 1, revert.
+        if (param.commands.length != 1) revert BurnerErrors.InvalidCommands(param.commands);
+        // If the inputs length is different from 1, revert.
+        if (param.inputs.length != 1) revert BurnerErrors.MismatchedInputLength(param.inputs);
         // Get the command.
-        uint256 commandSwap = convertToUint256(param.commands[0]);
-        uint256 commandSweep;
-
         address recipient = address(0);
         
         // Decode input based on command, to ensure the input is valid.
-        if (commandSwap == Commands.V3_SWAP_EXACT_IN) {
+        // Cast Commands constants to bytes1 for comparison
+        if (param.commands[0] == bytes1(uint8(Commands.V3_SWAP_EXACT_IN))) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeV3(param);
-            commandSweep = convertToUint256(param.commands[1]);
-        } else if (commandSwap == Commands.V2_SWAP_EXACT_IN) {
+        } else if (param.commands[0] == bytes1(uint8(Commands.V2_SWAP_EXACT_IN))) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeV2(param);
-            commandSweep = convertToUint256(param.commands[1]);
-        } else if (commandSwap == Commands.UNWRAP_WETH) {
+        } else if (param.commands[0] == bytes1(uint8(Commands.UNWRAP_WETH))) {
             (recipient, tokenIn, amountIn) = _validateAndDecodeWNATIVE(param);
         } else {
-            revert BurnerErrors.InvalidCommand(commandSwap);
+            // Cast command byte to uint8 for the error
+            revert BurnerErrors.InvalidCommand(uint8(param.commands[0]));
         }
 
         if (recipient != address(this)) revert BurnerErrors.InvalidRecipient(recipient);
 
-        if ((commandSwap == Commands.V3_SWAP_EXACT_IN || commandSwap == Commands.V2_SWAP_EXACT_IN) && commandSweep == Commands.SWEEP) {
-            _validateAndDecodeSweep(param, tokenIn, amountIn);
-        }
-        
         return (tokenIn, amountIn);
-    }
-
-    function convertToUint256(bytes1 command)
-        private
-        pure
-        returns (uint256 commandUint)
-    {
-        return uint256(uint8(command));
     }
 
     function _validateAndDecodeV3(SwapParams calldata param)
@@ -341,14 +316,15 @@ contract URBurner is Burner {
         abi.decode(param.inputs[0], (address, address, uint256));
     }
 
-    function _validateAndDecodeSweep(SwapParams calldata param, address tokenIn, uint256 amountIn)
-        private
-        view
+    function _createSweepParams(address tokenIn, uint256 amountIn) 
+        private 
+        view 
+        returns (bytes memory commands, bytes[] memory inputs) 
     {
-        (address tokenToSweep, address sender, uint256 amountSweeped) =
-        abi.decode(param.inputs[1], (address, address, uint256));
-        if (tokenToSweep != tokenIn) revert BurnerErrors.InvalidTokenToSweep(tokenToSweep, tokenIn);
-        if (sender != msg.sender) revert BurnerErrors.InvalidSweeper(sender, msg.sender);
-        if (amountSweeped != amountIn) revert BurnerErrors.InvalidSweepAmount(amountSweeped, amountIn);
+        bytes memory command = new bytes(1);
+        command[0] = bytes1(uint8(Commands.SWEEP)); 
+        bytes[] memory sweepInputs = new bytes[](1);
+        sweepInputs[0] = abi.encode(tokenIn, msg.sender, amountIn);
+        return (command, sweepInputs);
     }
 }
