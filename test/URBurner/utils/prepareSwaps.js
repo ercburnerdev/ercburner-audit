@@ -93,23 +93,13 @@ function prepareSwapExactInput(
 
     commandsString += command.startsWith("0x") ? command.substring(2) : command;
     inputs.push(mainInput);
-    
-    if (command == "0x00" || command == "0x08") {
-        const sweepInput = abiCoder.encode( 
-            ["address", "address", "uint256"],
-            [tokenIn, sweepRecipient, amountInBig] 
-        );
-        commandsString += "04"; 
-        inputs.push(sweepInput);
-    }
 
     return {
         tokenIn,
         amountIn,
         amountOutMinimum,
         commands: "0x" + commandsString,
-        inputs,
-        deadline: deadlineBigInt
+        inputs
     };
 }
 

@@ -38,7 +38,7 @@ describe("Burner - Referrer Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -46,8 +46,9 @@ describe("Burner - Referrer Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.user.address
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelf");
+      env.user.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
+    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelfUnlessPartner");
   });
 
   it("Should revert when non-referrer tries to upgrade", async function () {
@@ -138,7 +139,7 @@ describe("Burner - Referrer Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -146,7 +147,8 @@ describe("Burner - Referrer Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "EnforcedPause");
   });
 }); 

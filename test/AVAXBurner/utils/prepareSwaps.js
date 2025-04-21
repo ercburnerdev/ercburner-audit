@@ -17,7 +17,6 @@ function createSwapParams(tokenIn, amountIn, amountOutMinimum, recipient, path, 
         amountOutMinimum: BigInt(amountOutMinimum),
         path,
         to: recipient,
-        deadline: deadline ? BigInt(deadline) : BigInt(Math.floor(Date.now() / 1000) + 100000)
     };
 }
 
@@ -40,7 +39,7 @@ function createNativeSwapParams(tokenAddress, amountIn, recipient) {
             versions: []
         },
         to: recipient,
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 100000)
+        
     };
 }
 

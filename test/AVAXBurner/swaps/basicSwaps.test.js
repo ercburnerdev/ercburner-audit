@@ -17,7 +17,7 @@ describe("Burner - Basic Swaps", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -27,7 +27,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -55,7 +56,7 @@ describe("Burner - Basic Swaps", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -65,7 +66,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -97,7 +99,7 @@ describe("Burner - Basic Swaps", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -107,7 +109,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;

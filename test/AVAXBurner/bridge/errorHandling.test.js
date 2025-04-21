@@ -20,7 +20,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -30,7 +30,8 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       true, // bridge = true
       bridgeData,
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgePaused");
   });
 
@@ -41,7 +42,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -51,7 +52,8 @@ describe("Burner - Bridge Error Handling", function () {
       env.user.address, // non-zero recipient
       true, // bridge = true
       bridgeData,
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgeAndRecipientBothSet")
       .withArgs(env.user.address);
   });
@@ -63,7 +65,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -71,7 +73,8 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       true, // bridge = true
       "0x", // empty bridge data
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "InvalidBridgeData");
   });
 
@@ -82,7 +85,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -92,7 +95,8 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false, // bridge = false
       bridgeData, // non-empty bridge data
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgeDataMustBeEmpty")
       .withArgs(bridgeData);
   });
@@ -104,7 +108,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -113,6 +117,7 @@ describe("Burner - Bridge Error Handling", function () {
       false, // bridge = false
       "0x", // empty bridge data
       env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       { value: ethers.parseEther("0.1") } // sending ETH
     )).to.be.revertedWithCustomError(env.burner, "RecipientMustBeSet");
   });
@@ -124,7 +129,7 @@ describe("Burner - Bridge Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -140,6 +145,7 @@ describe("Burner - Bridge Error Handling", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       { value: insufficientValue }
     )).to.be.revertedWithCustomError(env.burner, "InsufficientValue")
       .withArgs(insufficientValue, minRequired);

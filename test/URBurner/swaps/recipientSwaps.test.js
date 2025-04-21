@@ -19,12 +19,12 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -40,7 +40,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient, // Recipient is the owner, not the zero address
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -91,12 +92,12 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -112,7 +113,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -171,7 +173,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -253,7 +256,7 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       swapParams.push({
         commands: swap.commands,
         inputs: swap.inputs,
-        deadline: swap.deadline
+        
       });
     }
 
@@ -271,7 +274,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -351,12 +355,12 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -380,7 +384,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      referrer
+      referrer,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -431,7 +436,7 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       {
         commands: swap.swapParams.commands,
         inputs: swap.swapParams.inputs,
-        deadline: swap.swapParams.deadline
+        
       }
     ];
 
@@ -439,7 +444,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       env.user.address,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.revertedWithCustomError(env.burner, "RecipientIsSender");
   });
 }); 

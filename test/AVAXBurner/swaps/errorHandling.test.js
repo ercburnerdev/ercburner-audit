@@ -15,7 +15,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "MismatchedInputs");
   });
 
@@ -28,14 +29,15 @@ describe("Burner - Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -55,14 +57,15 @@ describe("Burner - Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.reverted; // ERC20 insufficient balance error
   });
@@ -77,14 +80,15 @@ describe("Burner - Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.reverted; // ERC20 insufficient allowance error
   });
@@ -98,7 +102,7 @@ describe("Burner - Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
     // Get initial token balance
     const initialTokenBalance = await swap.token.balanceOf(env.user.address);
@@ -110,7 +114,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -132,7 +137,7 @@ describe("Burner - Error Handling", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Mock router to return 0
@@ -142,7 +147,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -176,7 +182,8 @@ describe("Burner - Error Handling", function () {
         "0x0000000000000000000000000000000000000000",
         false,
         "0x", 
-        "0x0000000000000000000000000000000000000000"
+        "0x0000000000000000000000000000000000000000",
+        BigInt(Math.floor(Date.now() / 1000) - 100000)
      )
     ).to.be.revertedWithCustomError(env.burner, "InvalidDeadline");
   });

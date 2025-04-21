@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { deployTestEnvironment } = require("../setup");
 const { getSwapParamsV3, getSwapParamsWNATIVE } = require("../utils/getSwapParams");
+const { createSwapParams } = require("../utils/prepareSwaps");
 
 describe("Burner - Events", function () {
   let env;
@@ -17,7 +18,7 @@ describe("Burner - Events", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Mock router to return 1 ETH
@@ -27,7 +28,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "BurnSuccess")
       .withArgs(
@@ -55,14 +57,14 @@ describe("Burner - Events", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -73,7 +75,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "BurnSuccess")
       .withArgs(
@@ -93,14 +96,14 @@ describe("Burner - Events", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -115,7 +118,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -164,7 +168,7 @@ describe("Burner - Events", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Mock router to return 1 ETH
@@ -174,7 +178,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapSuccess")
       .withArgs(
@@ -196,14 +201,14 @@ describe("Burner - Events", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -214,7 +219,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapSuccess")
       .withArgs(
@@ -230,5 +236,55 @@ describe("Burner - Events", function () {
         ethers.parseEther("50"),
         ethers.parseEther("1")
       );
+  });
+
+  it("Should revert when tokenOut is not WNATIVE", async function () {
+    let MockToken = await ethers.getContractFactory("MockToken");
+    let mockToken = await MockToken.deploy(`MockToken`, `MTK`);
+
+    await mockToken.mint(env.user.address, ethers.parseEther("1000"));
+    await mockToken.connect(env.user).approve(await env.burner.getAddress(), ethers.parseEther("1000"));
+
+    // Create simple mock path
+    const mockTokenAddress = await mockToken.getAddress();
+    const wnativeAddress = await env.mockWNATIVE.getAddress();
+    const amountIn = ethers.parseEther('100');
+    const amountOut = ethers.parseEther('1');
+    
+    const path = {
+        tokenPath: [wnativeAddress, mockTokenAddress],
+        pairBinSteps: [20],
+        versions: [2]
+    };
+
+    const swapParams = createSwapParams(
+        mockTokenAddress,
+        amountIn,
+        BigInt(amountOut) * BigInt(99) / BigInt(100), // 1% slippage
+        path,
+        await env.burner.getAddress()
+    )
+
+    let swap = [
+      {
+        tokenIn: swapParams.tokenIn,
+        amountIn: swapParams.amountIn,
+        amountOutMinimum: swapParams.amountOutMinimum,
+        path: path,
+      }
+    ]
+  
+    // Mock router to return 1 ETH
+    await env.mockLBRouter.setReturnAmount(ethers.parseEther("1"));
+  
+    await expect(env.burner.connect(env.user).swapExactInputMultiple(swap,
+      "0x0000000000000000000000000000000000000000",
+      false,
+      "0x", 
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
+    ))
+      .to.be.revertedWithCustomError(env.burner, "InvalidTokenOut")
+      .withArgs(await mockToken.getAddress());
   });
 }); 

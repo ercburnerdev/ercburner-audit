@@ -42,7 +42,8 @@ describe("Burner - Security Tests", function () {
           "0x0000000000000000000000000000000000000000",
           false,
           "0x", 
-          "0x0000000000000000000000000000000000000000"
+          "0x0000000000000000000000000000000000000000",
+          BigInt(Math.floor(Date.now() / 1000) + 100000)
        )
       ).to.be.revertedWithCustomError(env.burner, "ReentrancyGuardReentrantCall");
     });

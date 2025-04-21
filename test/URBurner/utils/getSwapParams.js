@@ -101,7 +101,7 @@ async function getMixedV2V3SwapParams(env, amount = 100, minimumAmountOut = 0.1)
       return {
         commands: swap.commands,
         inputs: swap.inputs,
-        deadline: swap.deadline
+        
       };
     }));
 

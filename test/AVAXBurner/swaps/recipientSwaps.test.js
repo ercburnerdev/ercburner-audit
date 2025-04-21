@@ -21,14 +21,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -44,7 +44,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient, // Recipient is the owner, not the zero address
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -97,14 +98,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -120,7 +121,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -179,7 +181,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -262,7 +265,7 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         amountIn: amountIn,
         amountOutMinimum: amountOutMinimum,
         path: path,
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 3600)
+        
       });
     }
 
@@ -280,7 +283,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -362,14 +366,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
         path: swap1.swapParams.path,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
         path: swap2.swapParams.path,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -393,7 +397,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      referrer
+      referrer,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -445,14 +450,15 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
       path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     expect(await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       env.user.address,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.revertedWithCustomError(env.burner, "RecipientIsSender");
   });
 }); 

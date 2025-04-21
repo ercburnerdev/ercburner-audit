@@ -16,7 +16,7 @@ describe("Burner - Events", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Mock router to return 1 ETH
@@ -26,7 +26,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "BurnSuccess")
       .withArgs(
@@ -52,12 +53,12 @@ describe("Burner - Events", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -68,7 +69,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "BurnSuccess")
       .withArgs(
@@ -86,12 +88,12 @@ describe("Burner - Events", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -106,7 +108,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -153,7 +156,7 @@ describe("Burner - Events", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Mock router to return 1 ETH
@@ -163,7 +166,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapSuccess")
       .withArgs(
@@ -183,12 +187,12 @@ describe("Burner - Events", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -199,7 +203,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapSuccess")
       .withArgs(
@@ -249,7 +254,7 @@ describe("Burner - Events", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
   
     // Mock router to return 1 ETH
@@ -259,106 +264,11 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.revertedWithCustomError(env.burner, "InvalidTokenOut")
       .withArgs(await mockToken.getAddress());
-  });
-
-  it("Should revert when tokenIn is not the same as tokenToSweep", async function () {
-    let MockToken = await ethers.getContractFactory("MockToken");
-    let mockToken = await MockToken.deploy(`MockToken`, `MTK`);
-  
-  
-    await mockToken.mint(env.user.address, ethers.parseEther("1000"));
-    await mockToken.connect(env.user).approve(await env.burner.getAddress(), ethers.parseEther("1000"));
-  
-    const encodedPath = encodePath(
-        "0x00", 
-        [await env.mockWNATIVE.getAddress(), await env.mockWNATIVE.getAddress()], 
-        [3000]
-    );
-  
-    const swap = {
-        swapParams: prepareSwapExactInput(
-            "0x00",
-            await env.burner.getAddress(),
-            await mockToken.getAddress(),
-            ethers.parseEther("100"),
-            ethers.parseEther("0.1"),
-            encodedPath,
-            false,
-            env.user.address,
-            Math.floor(Date.now() / 1000) + 3600
-        ),
-        token: mockToken
-    }
-  
-    const swapParams = [{
-      commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
-    }];
-  
-    // Mock router to return 1 ETH
-    await env.mockUniversalRouter.setReturnAmount(ethers.parseEther("1"));
-  
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x", 
-      "0x0000000000000000000000000000000000000000"
-    ))
-      .to.be.revertedWithCustomError(env.burner, "InvalidTokenToSweep")
-      .withArgs(await mockToken.getAddress(), await env.mockWNATIVE.getAddress());
-  });
-
-  it("Should revert when sweeper is not the same as msg.sender", async function () {
-    let MockToken = await ethers.getContractFactory("MockToken");
-    let mockToken = await MockToken.deploy(`MockToken`, `MTK`);
-  
-  
-    await mockToken.mint(env.user.address, ethers.parseEther("1000"));
-    await mockToken.connect(env.user).approve(await env.burner.getAddress(), ethers.parseEther("1000"));
-  
-    const encodedPath = encodePath(
-        "0x00", 
-        [await await mockToken.getAddress(), await env.mockWNATIVE.getAddress()], 
-        [3000]
-    );
-  
-    const swap = {
-        swapParams: prepareSwapExactInput(
-            "0x00",
-            await env.burner.getAddress(),
-            await mockToken.getAddress(),
-            ethers.parseEther("100"),
-            ethers.parseEther("0.1"),
-            encodedPath,
-            false,
-            env.admin.address, // Sweeper is admin
-            Math.floor(Date.now() / 1000) + 3600
-        ),
-        token: mockToken
-    }
-  
-    const swapParams = [{
-      commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
-    }];
-  
-    // Mock router to return 1 ETH
-    await env.mockUniversalRouter.setReturnAmount(ethers.parseEther("1"));
-  
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x", 
-      "0x0000000000000000000000000000000000000000"
-    ))
-      .to.be.revertedWithCustomError(env.burner, "InvalidSweeper")
-      .withArgs(env.admin.address, env.user.address);
   });
 
   it("Should revert when payerIsUser is true", async function () {
@@ -393,7 +303,7 @@ describe("Burner - Events", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
   
     // Mock router to return 1 ETH
@@ -403,7 +313,8 @@ describe("Burner - Events", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.revertedWithCustomError(env.burner, "PayerIsUser");
   });

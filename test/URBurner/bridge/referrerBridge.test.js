@@ -19,7 +19,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track contract balances before swap
@@ -34,6 +34,7 @@ describe("Burner - Bridge with Referrer", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address, // referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -86,7 +87,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track contract balances before swap
@@ -100,7 +101,8 @@ describe("Burner - Bridge with Referrer", function () {
       "0x0000000000000000000000000000000000000000", // no recipient (using bridge)
       true, // bridge = true
       bridgeData,
-      env.referrer.address, // referrer
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -155,12 +157,12 @@ describe("Burner - Bridge with Referrer", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -178,7 +180,8 @@ describe("Burner - Bridge with Referrer", function () {
       "0x0000000000000000000000000000000000000000", // no recipient (using bridge)
       true, // bridge = true
       bridgeData,
-      env.referrer.address, // referrer
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -345,12 +348,12 @@ describe("Burner - Bridge with Referrer", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       }
     ];
 
@@ -368,7 +371,8 @@ describe("Burner - Bridge with Referrer", function () {
       "0x0000000000000000000000000000000000000000",
       true,
       bridgeData,
-      env.referrer.address, // referrer
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.2")}
     );
 
@@ -429,17 +433,17 @@ describe("Burner - Bridge with Referrer", function () {
       {
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
-        deadline: swap1.swapParams.deadline
+        
       },
       {
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
-        deadline: swap2.swapParams.deadline
+        
       },
       {
         commands: swap3.swapParams.commands,
         inputs: swap3.swapParams.inputs,
-        deadline: swap3.swapParams.deadline
+        
       }
     ];
 
@@ -458,6 +462,7 @@ describe("Burner - Bridge with Referrer", function () {
       true,
       bridgeData,
       env.referrer.address, // referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.5")}
     );
 
@@ -631,7 +636,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track balances
@@ -646,6 +651,7 @@ describe("Burner - Bridge with Referrer", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address, // partner referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -702,7 +708,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track balances
@@ -717,6 +723,7 @@ describe("Burner - Bridge with Referrer", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address, // partner referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -777,7 +784,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track balances
@@ -792,6 +799,7 @@ describe("Burner - Bridge with Referrer", function () {
       true, // bridge = true
       bridgeData,
       env.user.address, // self-referral
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
     
@@ -853,7 +861,7 @@ describe("Burner - Bridge with Referrer", function () {
     const swapParams = [{
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
-      deadline: swap.swapParams.deadline
+      
     }];
 
     // Track balances
@@ -868,6 +876,7 @@ describe("Burner - Bridge with Referrer", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address, // referrer (but referrals are paused)
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 

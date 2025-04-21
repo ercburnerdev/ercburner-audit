@@ -97,8 +97,7 @@ describe("Burner - Admin Functions", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      path: swap.swapParams.path
     }];
 
     await expect(
@@ -106,7 +105,8 @@ describe("Burner - Admin Functions", function () {
          "0x0000000000000000000000000000000000000000",
           false,
           "0x", 
-          "0x0000000000000000000000000000000000000000"
+          "0x0000000000000000000000000000000000000000",
+          BigInt(Math.floor(Date.now() / 1000) + 100000)
         )
     ).to.be.revertedWithCustomError(env.burner, "EnforcedPause");
   });
@@ -170,8 +170,7 @@ describe("Burner - Admin Functions", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path,
-      deadline: swap.swapParams.deadline
+      path: swap.swapParams.path
     }];
 
     const userTokenBalanceBefore = await env.mockToken.balanceOf(env.user.address);
@@ -184,6 +183,7 @@ describe("Burner - Admin Functions", function () {
        false,
        "0x", 
        "0x0000000000000000000000000000000000000000", 
+       BigInt(Math.floor(Date.now() / 1000) + 100000),
        {gasLimit: 200000}
     );
     const receipt = await tx.wait();
