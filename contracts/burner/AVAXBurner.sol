@@ -182,11 +182,11 @@ contract AVAXBurner is Burner {
                 emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, param.amountIn, actualReceived);
             } catch {
                 // If the swap fails, decrease the allowance of the router contract.
+                token.safeTransfer(msg.sender, param.amountIn);
                 try token.approve(address(router), 0) {
-                    token.safeTransfer(msg.sender, param.amountIn);
                     emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error");
                 } catch {
-                    revert BurnerErrors.AvaxSwapIssue(msg.sender, param.tokenIn, param.amountIn, "Token allowance decrease failed");
+                    emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error + Revoke failure");
                 }
             }
         }
