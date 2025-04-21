@@ -263,6 +263,11 @@ contract URBurner is Burner {
         return (tokenIn, amountIn);
     }
 
+    /// @notice Validates a SWAPV3 is formatted as expected
+    /// @param param The swap parameters
+    /// @return recipient The swap recipient
+    /// @return tokenIn The token being swapped
+    /// @return amountIn The amount of token being swapped
     function _validateAndDecodeV3(SwapParams calldata param)
         private
         view
@@ -287,6 +292,11 @@ contract URBurner is Burner {
         }
     }
 
+    /// @notice Validates a SWAPV2 is formatted as expected
+    /// @param param The swap parameters
+    /// @return recipient The swap recipient
+    /// @return tokenIn The token being swapped
+    /// @return amountIn The amount of token being swapped
     function _validateAndDecodeV2(SwapParams calldata param)
         private
         view
@@ -307,6 +317,11 @@ contract URBurner is Burner {
         }
     }
 
+    /// @notice Validates a WNATIVE swap paremeter is formatted as expected
+    /// @param param The swap parameters
+    /// @return recipient The swap recipient
+    /// @return tokenIn The token being swapped
+    /// @return amountIn The amount of token being swapped
     function _validateAndDecodeWNATIVE(SwapParams calldata param)
         private
         pure
@@ -316,6 +331,11 @@ contract URBurner is Burner {
         abi.decode(param.inputs[0], (address, address, uint256));
     }
 
+    /// @notice Creates the sweep parameters when a swap fails
+    /// @param tokenIn The token being sweeped
+    /// @param amountIn The amount of token being sweeped
+    /// @return commands The sweep command to executes
+    /// @return inputs The inputs to the commands
     function _createSweepParams(address tokenIn, uint256 amountIn) 
         private 
         view 
