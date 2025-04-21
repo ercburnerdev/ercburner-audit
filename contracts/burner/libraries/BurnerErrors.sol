@@ -56,7 +56,7 @@ library BurnerErrors {
     error InvalidBridgeData();
 
     /// @notice Emitted when the referrer cannot be the self
-    error ReferrerCannotBeSelf();
+    error ReferrerCannotBeSelfUnlessPartner();
 
     /// @notice Emitted when a referrer is not registered
     error ReferrerNotRegistered();

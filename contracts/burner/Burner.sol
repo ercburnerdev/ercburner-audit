@@ -140,7 +140,7 @@ abstract contract Burner is Initializable, ReentrancyGuardUpgradeable, Ownable2S
     /// @notice Modifier to check if the referrer is valid
     /// @param _referrer The referrer address
     modifier referrerCheck(address _referrer) {
-        if (_referrer == msg.sender && partners[_referrer] == 0) revert BurnerErrors.ReferrerCannotBeSelf();
+        if (_referrer == msg.sender && partners[_referrer] == 0) revert BurnerErrors.ReferrerCannotBeSelfUnlessPartner();
         _;
     }
 
