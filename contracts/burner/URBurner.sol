@@ -169,7 +169,7 @@ contract URBurner is Burner {
             try routerContract.execute(swapCommand, swapInputs, deadline) {
                 // Calculate the actual amount received
                 uint256 postBalance = IERC20(WNATIVE).balanceOf(address(this));
-                if (postBalance < preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
+                if (postBalance <= preBalance) revert BurnerErrors.SwapIssue(preBalance, postBalance);
                 
                 uint256 actualReceived = postBalance - preBalance;
                 totalAmountOut += actualReceived;

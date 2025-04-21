@@ -22,6 +22,8 @@ import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
 import { BurnerErrors } from "./libraries/BurnerErrors.sol";
 
+import "hardhat/console.sol";
+
 /// @title Trader Joe's LB Router Token Burner
 /// @author ERC Burner Team
 /// @notice A contract that allows users to swap multiple tokens to AVAX in a single transaction
@@ -165,7 +167,8 @@ contract AVAXBurner is Burner {
                 emit BurnerEvents.SwapSuccess(msg.sender, param.tokenIn, param.amountIn, param.amountIn);
                 continue;
             }
-
+            
+            if(address(param.path.tokenPath[1]) != WNATIVE) revert BurnerErrors.InvalidTokenOut(address(param.path.tokenPath[1]));
             // Increase allowance for the swap router.
             token.safeIncreaseAllowance(address(router), param.amountIn);
 
