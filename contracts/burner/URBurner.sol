@@ -40,7 +40,6 @@ contract URBurner is Burner {
     {
         bytes commands;
         bytes[] inputs;
-        uint256 deadline;
     }
 
     /// @notice The Universal Router contract
@@ -103,7 +102,8 @@ contract URBurner is Burner {
         address _to,
         bool bridge,
         bytes calldata bridgeData,
-        address _referrer
+        address _referrer,
+        uint256 deadline
     ) 
         external 
         payable 
@@ -120,6 +120,8 @@ contract URBurner is Burner {
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
         if (!bridge && msg.value > 0 && _to == msg.sender) revert BurnerErrors.RecipientIsSender();
 
+        if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
+
         uint256 totalAmountOut = 0;
         uint256 len = params.length;
 
@@ -127,8 +129,7 @@ contract URBurner is Burner {
             SwapParams calldata param = params[i];
             // Validate and decode swap parameters
             (address tokenIn, uint256 amountIn) = _validateAndDecodeSwapParams(param);
-            uint256 deadline = param.deadline;
-            if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
+            
 
             // Skip processing if gas is insufficient or amount is zero
             if (gasleft() < minGasLeft) {

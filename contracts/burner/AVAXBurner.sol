@@ -43,7 +43,6 @@ contract AVAXBurner is Burner {
         uint256 amountIn;
         uint256 amountOutMinimum;
         ILBRouter.Path path;
-        uint256 deadline;
     }
 
     /// @notice The Trader Joe's LB Router contract
@@ -120,7 +119,8 @@ contract AVAXBurner is Burner {
         address _to,
         bool bridge,
         bytes calldata bridgeData,
-        address _referrer
+        address _referrer,
+        uint256 deadline
     ) 
         external 
         payable 
@@ -137,14 +137,13 @@ contract AVAXBurner is Burner {
         if (!bridge && msg.value > 0 && _to == address(0)) revert BurnerErrors.RecipientMustBeSet();
         if (!bridge && msg.value > 0 && _to == msg.sender) revert BurnerErrors.RecipientIsSender();
         
+        if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
+
         uint256 totalAmountOut = 0;
         uint256 len = params.length;
 
         for (uint256 i; i < len; i++) {
             SwapParams calldata param = params[i];
-            uint256 deadline = param.deadline;
-            if (deadline < block.timestamp) revert BurnerErrors.InvalidDeadline(deadline, block.timestamp);
-
             // Short circuit if insufficient gas.
             if (gasleft() < minGasLeft) {
                 emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Insufficient gas");
