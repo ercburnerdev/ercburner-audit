@@ -22,8 +22,6 @@ import { IRelayReceiver } from "./interfaces/IRelayReceiver.sol";
 import { BurnerEvents } from "./libraries/BurnerEvents.sol";
 import { BurnerErrors } from "./libraries/BurnerErrors.sol";
 
-import "hardhat/console.sol";
-
 /// @title Trader Joe's LB Router Token Burner
 /// @author ERC Burner Team
 /// @notice A contract that allows users to swap multiple tokens to AVAX in a single transaction
@@ -48,7 +46,7 @@ contract AVAXBurner is Burner {
     }
 
     /// @notice The Trader Joe's LB Router contract
-    ILBRouter public router;
+    ILBRouter public routerContract;
     /// @notice The bridge contract address
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -58,7 +56,7 @@ contract AVAXBurner is Burner {
 
     /// @notice Initializes the contract with required parameters
     /// @dev Sets up the contract with initial configuration values
-    /// @param _router Address of the Swap Router contract
+    /// @param _routerContract Address of the LFJ's LBRouter contract
     /// @param _bridgeAddress Address of the bridge contract
     /// @param _WNATIVE Address of the wrapped native token (WNATIVE)
     /// @param _USDC Address of the USDC token
@@ -71,7 +69,7 @@ contract AVAXBurner is Burner {
     /// @param _maxTokensPerBurn Maximum number of tokens that can be burned in one transaction
     /// @param _admin Address of the admin
     function initializeBurner(
-        ILBRouter _router,
+        ILBRouter _routerContract,
         IRelayReceiver _bridgeAddress,
         address _WNATIVE,
         address _USDC,
@@ -87,7 +85,7 @@ contract AVAXBurner is Burner {
         external 
         initializer 
     {
-        if(address(_router) == address(0)) revert BurnerErrors.ZeroAddress();
+        if(address(_routerContract) == address(0)) revert BurnerErrors.ZeroAddress();
 
         super.initialize(
             _bridgeAddress,
@@ -103,9 +101,9 @@ contract AVAXBurner is Burner {
             _admin
         );
 
-        router = _router;
+        routerContract = _routerContract;
 
-        emit BurnerEvents.RouterContractChanged(address(_router));
+        emit BurnerEvents.RouterContractChanged(address(_routerContract));
     }
     
     /// @notice Swaps multiple tokens for NATIVE in a single transaction
@@ -170,10 +168,10 @@ contract AVAXBurner is Burner {
             
             if(address(param.path.tokenPath[1]) != WNATIVE) revert BurnerErrors.InvalidTokenOut(address(param.path.tokenPath[1]));
             // Increase allowance for the swap router.
-            token.safeIncreaseAllowance(address(router), param.amountIn);
+            token.safeIncreaseAllowance(address(routerContract), param.amountIn);
 
             // Execute the swap.
-            try router.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), deadline) returns (uint256 actualReceived) {
+            try routerContract.swapExactTokensForTokens(param.amountIn, param.amountOutMinimum, param.path, address(this), deadline) returns (uint256 actualReceived) {
                 // If the amount received is 0, revert.
                 if (actualReceived <= 0) revert BurnerErrors.AvaxSwapIssue(msg.sender, param.tokenIn, param.amountIn, "Zero amount received");
                 // Add the amount received to the total amount out.
@@ -183,7 +181,7 @@ contract AVAXBurner is Burner {
             } catch {
                 // If the swap fails, decrease the allowance of the router contract.
                 token.safeTransfer(msg.sender, param.amountIn);
-                try token.approve(address(router), 0) {
+                try token.approve(address(routerContract), 0) {
                     emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error");
                 } catch {
                     emit BurnerEvents.SwapFailed(msg.sender, param.tokenIn, param.amountIn, "Router error + Revoke failure");
