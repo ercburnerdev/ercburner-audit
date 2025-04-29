@@ -166,7 +166,7 @@ contract AVAXBurner is Burner {
                 continue;
             }
             
-            if(address(param.path.tokenPath[1]) != WNATIVE) revert BurnerErrors.InvalidTokenOut(address(param.path.tokenPath[1]));
+            if(address(param.path.tokenPath[param.path.tokenPath.length - 1]) != WNATIVE) revert BurnerErrors.InvalidTokenOut(address(param.path.tokenPath[param.path.tokenPath.length - 1]));
             // Increase allowance for the swap router.
             token.safeIncreaseAllowance(address(routerContract), param.amountIn);
 
