@@ -13,9 +13,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsWNATIVE(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -25,7 +25,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -49,9 +50,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -61,7 +62,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -89,9 +91,9 @@ describe("Burner - Basic Swaps", function () {
     const swap = await getSwapParamsV2(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const userBalanceBefore = await ethers.provider.getBalance(env.user.address);
@@ -101,7 +103,8 @@ describe("Burner - Basic Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;

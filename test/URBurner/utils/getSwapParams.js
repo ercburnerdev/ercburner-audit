@@ -13,7 +13,7 @@ async function getSwapParamsV3(env, amount = 100, minimumAmountOut = 0.1) {
         "0x00", 
         [await mockToken.getAddress(), await env.mockWNATIVE.getAddress()], 
         [3000]
-        );
+    );
 
     return {
         swapParams: prepareSwapExactInput(
@@ -23,7 +23,9 @@ async function getSwapParamsV3(env, amount = 100, minimumAmountOut = 0.1) {
             ethers.parseEther(amount.toString()),
             ethers.parseEther(minimumAmountOut.toString()),
             encodedPath,
-            true
+            false,
+            env.user.address,
+            Math.floor(Date.now() / 1000) + 100000
         ),
         token: mockToken
     }
@@ -44,7 +46,9 @@ async function getSwapParamsV2(env, amount = 100, minimumAmountOut = 0.1) {
                 ethers.parseEther(amount.toString()),
                 ethers.parseEther(minimumAmountOut.toString()),
                 [await mockToken.getAddress(), await env.mockWNATIVE.getAddress()],
-                true
+                false,
+                env.user.address,
+                Math.floor(Date.now() / 1000) + 100000
             ),
         token: mockToken
     }
@@ -55,6 +59,7 @@ async function getSwapParamsWNATIVE(env, amount = 1) {
         await env.mockWNATIVE.getAddress(),
         ethers.parseEther(amount.toString()),
         await env.burner.getAddress(),
+        env.user.address,
         await env.mockWNATIVE.getAddress()
     );
 
@@ -88,13 +93,15 @@ async function getMixedV2V3SwapParams(env, amount = 100, minimumAmountOut = 0.1)
         ethers.parseEther(amount.toString()),
         ethers.parseEther(minimumAmountOut.toString()),
         index % 2 === 0 ? encodedPath : [await token.getAddress(), await env.mockWNATIVE.getAddress()],
-        true
+        false,
+        env.user.address,
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       return {
-        tokenIn: swap.tokenIn,
         commands: swap.commands,
-        inputs: swap.inputs
+        inputs: swap.inputs,
+        
       };
     }));
 

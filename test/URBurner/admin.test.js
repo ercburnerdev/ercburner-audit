@@ -94,9 +94,9 @@ describe("Burner - Admin Functions", function () {
 
     let swap = await getSwapParamsV3(env);
     let swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     await expect(
@@ -104,7 +104,8 @@ describe("Burner - Admin Functions", function () {
          "0x0000000000000000000000000000000000000000",
           false,
           "0x", 
-          "0x0000000000000000000000000000000000000000"
+          "0x0000000000000000000000000000000000000000",
+          BigInt(Math.floor(Date.now() / 1000) + 100000)
         )
     ).to.be.revertedWithCustomError(env.burner, "EnforcedPause");
   });
@@ -124,7 +125,7 @@ describe("Burner - Admin Functions", function () {
 
     const recipientBalanceBefore = await ethers.provider.getBalance(env.user.address);
 
-    await env.burner.connect(env.owner).rescueETH(env.user.address, amount);
+    await env.burner.connect(env.owner).rescueNATIVE(env.user.address, amount);
 
 
     // Verify the ETH was transferred
@@ -135,39 +136,39 @@ describe("Burner - Admin Functions", function () {
 
   it("Should not allow non-owner to rescue ETH", async function () {
     const amount = ethers.parseEther("10");
-    await expect(env.burner.connect(env.user).rescueETH(env.user.address, amount))
+    await expect(env.burner.connect(env.user).rescueNATIVE(env.user.address, amount))
       .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
       .withArgs(env.user.address);
 
   });
 
-  it("Should allow owner to set minGasForSwap", async function () {
-    const newMinGasForSwap = 122222;
-    await env.burner.connect(env.owner).setMinGasForSwap(newMinGasForSwap);
-    expect(await env.burner.minGasForSwap()).to.equal(newMinGasForSwap);
+  it("Should allow owner to set minGasLeft", async function () {
+    const newMinGasLeft = 122222;
+    await env.burner.connect(env.owner).setMinGasLeft(newMinGasLeft);
+    expect(await env.burner.minGasLeft()).to.equal(newMinGasLeft);
   });
 
-  it("Should not allow non-owner to set minGasForSwap", async function () {
-    const newMinGasForSwap = 122222;
-    await expect(env.burner.connect(env.user).setMinGasForSwap(newMinGasForSwap))
+  it("Should not allow non-owner to set minGasLeft", async function () {
+    const newMinGasLeft = 122222;
+    await expect(env.burner.connect(env.user).setMinGasLeft(newMinGasLeft))
       .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
       .withArgs(env.user.address);
   });
 
-  it("Should not allow setting minGasForSwap to 0", async function () {
-    await expect(env.burner.connect(env.owner).setMinGasForSwap(0))
-      .to.be.revertedWithCustomError(env.burner, "ZeroMinGasForSwap")
+  it("Should not allow setting minGasLeft to 0", async function () {
+    await expect(env.burner.connect(env.owner).setMinGasLeft(0))
+      .to.be.revertedWithCustomError(env.burner, "ZeroMinGasLeft")
   });
 
-  it("Should ensure a swap fails if gasleft is less than minGasForSwap", async function () {
-    await env.burner.connect(env.owner).setMinGasForSwap(1000000);
+  it("Should ensure a swap fails if gasleft is less than minGasLeft", async function () {
+    await env.burner.connect(env.owner).setMinGasLeft(1000000);
 
     let swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const userTokenBalanceBefore = await env.mockToken.balanceOf(env.user.address);
@@ -179,7 +180,8 @@ describe("Burner - Admin Functions", function () {
       "0x0000000000000000000000000000000000000000",
        false,
        "0x", 
-       "0x0000000000000000000000000000000000000000", 
+       "0x0000000000000000000000000000000000000000",
+       BigInt(Math.floor(Date.now() / 1000) + 100000),
        {gasLimit: 200000}
     );
     const receipt = await tx.wait();
@@ -326,5 +328,53 @@ describe("Burner - Admin Functions", function () {
     await expect(env.burner.connect(env.user).putPartner(env.solver.address, 10))
       .to.be.revertedWithCustomError(env.burner, "CallerNotAdminOrOwner")
       .withArgs(env.user.address);
+  });
+
+  it("Should allow owner to transfer ownership", async function () {
+    const newOwner = env.recipient.address;
+
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await env.burner.connect(env.recipient).acceptOwnership();
+    expect(await env.burner.owner()).to.equal(newOwner);
+  });
+
+  it("Should not allow non-owner to transfer ownership", async function () {
+    const newOwner = env.recipient.address;
+    await expect(env.burner.connect(env.user).transferOwnership(newOwner))
+      .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
+      .withArgs(env.user.address);
+  });
+
+  it("Should not allow non-owner to accept ownership", async function () {
+    const newOwner = env.recipient.address;
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await expect(env.burner.connect(env.user).acceptOwnership())
+      .to.be.revertedWithCustomError(env.burner, "OwnableUnauthorizedAccount")
+      .withArgs(env.user.address);
+  });
+  
+  it("Should allow owner to transfer ownership and default_admin_role", async function () {
+    const DEFAULT_ADMIN_ROLE = await env.burner.DEFAULT_ADMIN_ROLE();
+    const owner = await env.burner.owner();
+
+    expect(owner).to.equal(env.owner.address);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.owner.address)).to.equal(true);
+
+    const newOwner = env.recipient.address;
+
+    await env.burner.connect(env.owner).transferOwnership(newOwner);
+    expect(await env.burner.pendingOwner()).to.equal(newOwner);
+
+    await env.burner.connect(env.recipient).acceptOwnership();
+
+    expect(await env.burner.owner()).to.equal(newOwner);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.recipient.address)).to.equal(true);
+    
+    expect(await env.burner.owner()).to.not.equal(env.owner.address);
+    expect(await env.burner.hasRole(DEFAULT_ADMIN_ROLE, env.owner.address)).to.equal(false);
   });
 });

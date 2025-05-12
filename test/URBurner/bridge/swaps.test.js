@@ -17,9 +17,9 @@ describe("Burner - Bridge Swaps", function () {
     const swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     // Track contract balances before swap
@@ -33,6 +33,7 @@ describe("Burner - Bridge Swaps", function () {
       true, // bridge = true
       bridgeData,
       "0x0000000000000000000000000000000000000000", // no referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -41,7 +42,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -69,9 +70,9 @@ describe("Burner - Bridge Swaps", function () {
     const swap = await getSwapParamsWNATIVE(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn, // WNATIVE
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     // Track contract balances before swap
@@ -85,6 +86,7 @@ describe("Burner - Bridge Swaps", function () {
       true, // bridge = true
       bridgeData,
       "0x0000000000000000000000000000000000000000", // no referrer
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -93,7 +95,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -119,14 +121,14 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -143,7 +145,8 @@ describe("Burner - Bridge Swaps", function () {
       "0x0000000000000000000000000000000000000000", // no recipient (using bridge)
       true, // bridge = true
       bridgeData,
-      "0x0000000000000000000000000000000000000000", // no referrer
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 
@@ -152,7 +155,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.975") + ethers.parseEther("0.09975"), // 97.5% of swap amount + 99.75% of direct ETH
         ethers.parseEther("0.025") + ethers.parseEther("0.00025")  // 2.5% of swap fee + 0.25% of bridge fee
       );
@@ -196,7 +199,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.9975"), // 99.75% of 1 ETH
         ethers.parseEther("0.0025")  // 0.25% of 1 ETH
       );
@@ -234,7 +237,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x", // Return data from mock receiver
+        bridgeData, // Return data from mock receiver
         ethers.parseEther("0.9975"), // 99.75% of 1 ETH
         ethers.parseEther("0.0025")  // 0.25% of 1 ETH
       );
@@ -264,14 +267,14 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -289,6 +292,7 @@ describe("Burner - Bridge Swaps", function () {
       true,
       bridgeData,
       "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.2")}
     );
 
@@ -307,7 +311,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("1.662"), // 1.1745 + 0.4875 = 1.662 ETH
         ethers.parseEther("0.038")  // 0.0375 + 0.0005 = 0.038 ETH
       );
@@ -333,19 +337,19 @@ describe("Burner - Bridge Swaps", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap3.swapParams.tokenIn,
         commands: swap3.swapParams.commands,
         inputs: swap3.swapParams.inputs,
+        
       }
     ];
 
@@ -363,6 +367,7 @@ describe("Burner - Bridge Swaps", function () {
       true,
       bridgeData,
       "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.5")}
     );
 
@@ -380,7 +385,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         ethers.parseEther("2.44875"), // 1.94875 + 0.49875 = 2.44875 ETH
         ethers.parseEther("0.05125")  // 0.05 + 0.00125 = 0.05125 ETH
       );
@@ -427,7 +432,7 @@ describe("Burner - Bridge Swaps", function () {
         .to.emit(env.burner, "BridgeSuccess")
         .withArgs(
           env.user.address,
-          "0x",
+          bridgeData,
           expectedAmount,
           expectedFee
         );
@@ -471,7 +476,7 @@ describe("Burner - Bridge Swaps", function () {
       .to.emit(env.burner, "BridgeSuccess")
       .withArgs(
         env.user.address,
-        "0x",
+        bridgeData,
         expectedAmount,
         expectedFee
       );

@@ -40,12 +40,12 @@ library BurnerEvents {
 
     /// @notice Emitted when a bridge call is successful
     /// @param user The user who called the bridge
-    /// @param returnData The data returned by the bridge
+    /// @param data The data sent to the bridge
     /// @param amountAfterFee The amount of tokens received after fees
     /// @param bridgeFee The amount of fees collected
     event BridgeSuccess(
         address indexed user, 
-        bytes returnData, 
+        bytes data, 
         uint256 amountAfterFee, 
         uint256 bridgeFee
     );
@@ -61,9 +61,9 @@ library BurnerEvents {
     );
 
     /// @notice Emitted when the minimum gas for a swap is changed
-    /// @param newMinGasForSwap The new minimum gas before swap
-    event MinGasForSwapChanged(
-        uint32 newMinGasForSwap
+    /// @param newMinGasLeft The new minimum gas before swap
+    event MinGasLeftChanged(
+        uint32 newMinGasLeft
     );
 
     /// @notice Emitted when the maximum number of tokens that can be burned in one transaction is changed
@@ -79,15 +79,15 @@ library BurnerEvents {
     );
 
     /// @notice Emitted when the bridge fee divisor is changed
-    /// @param newBridgeFeeDivisor The new bridge fee divisor
-    event BridgeFeeDivisorChanged(
-        uint256 newBridgeFeeDivisor
+    /// @param newNativeSentFeeDivisor The new bridge fee divisor
+    event NativeSentFeeDivisorChanged(
+        uint256 newNativeSentFeeDivisor
     );
 
     /// @notice Emitted when the referrer fee share is changed
     /// @param newReferrerFeeShare The new referrer fee share
     event ReferrerFeeShareChanged(
-        uint8 newReferrerFeeShare
+        uint256 newReferrerFeeShare
     );
 
     /// @notice Emitted when a partner is added
@@ -110,16 +110,10 @@ library BurnerEvents {
         uint8 newFeeShare
     );
 
-    /// @notice Emitted when the Router is changed
-    /// @param newRouter The new Router address
-    event RouterChanged(
-        address indexed newRouter
-    );
-
-    /// @notice Emitted when the Permit2 contract is changed
-    /// @param newPermit2 The new Permit2 address
-    event Permit2Changed(
-        address indexed newPermit2
+    /// @notice Emitted when the Router contract is changed
+    /// @param newRouterContract The new Router contract address
+    event RouterContractChanged(
+        address indexed newRouterContract
     );
 
     /// @notice Emitted when the fee collector is changed
@@ -128,10 +122,10 @@ library BurnerEvents {
         address indexed newFeeCollector
     );
 
-    /// @notice Emitted when the bridge address is changed
-    /// @param newBridgeAddress The new bridge address
-    event BridgeAddressChanged(
-        address indexed newBridgeAddress
+    /// @notice Emitted when the bridge contract is changed
+    /// @param newBridgeContract The new bridge contract address
+    event BridgeContractChanged(
+        address indexed newBridgeContract
     );
 
     /// @notice Emitted when the bridge is paused

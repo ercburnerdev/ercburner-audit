@@ -7,7 +7,7 @@ library BurnerErrors {
     /// @notice Emitted when an invalid command is used
     /// @param command The invalid command
     error InvalidCommand(
-        bytes1 command
+        uint256 command
     );
 
     /// @notice Emitted when an invalid recipient is used
@@ -49,26 +49,25 @@ library BurnerErrors {
     /// @notice Emitted when the recipient must be set
     error RecipientMustBeSet();
 
+    /// @notice Emitted when the recipient is the sender
+    error RecipientIsSender();
+
     /// @notice Emitted when the bridge data is invalid
     error InvalidBridgeData();
 
     /// @notice Emitted when the referrer cannot be the self
-    error ReferrerCannotBeSelf();
-
-    /// @notice Emitted when the referrer cannot be the fee collector
-    error ReferrerCannotBeFeeCollector();
-
-    /// @notice Emitted when the referrer cannot be the contract
-    error ReferrerCannotBeContract();
+    error ReferrerCannotBeSelfUnlessPartner();
 
     /// @notice Emitted when a referrer is not registered
     error ReferrerNotRegistered();
 
-    /// @notice Emitted when the to cannot be the contract
-    error ToCannotBeContract();
-
-    /// @notice Emitted when the to cannot be the fee collector
-    error ToCannotBeFeeCollector();
+    /// @notice Emitted when the deadline is invalid
+    /// @param deadline The deadline
+    /// @param blockTimestamp The block timestamp
+    error InvalidDeadline(
+        uint256 deadline,
+        uint256 blockTimestamp
+    );
 
     /// @notice Emitted when there is an issue with the swap
     /// @param preBalance The pre-balance
@@ -128,14 +127,17 @@ library BurnerErrors {
     /// @notice Emitted when the address is zero
     error ZeroAddress();
 
-    /// @notice Emitted when the min gas for a swap is zero
-    error ZeroMinGasForSwap();
+    /// @notice Emitted when the min gas left is zero
+    error ZeroMinGasLeft();
 
     /// @notice Emitted when the max tokens per burn is zero
     error ZeroMaxTokensPerBurn();
 
     /// @notice Emitted when the bridge is paused
     error BridgePaused();
+
+    /// @notice Emitted when the referral is paused
+    error ReferralPaused();
 
     /// @notice Emitted when the maximum tier is reached
     error MaximumTierReached();
@@ -150,8 +152,8 @@ library BurnerErrors {
     /// @param provided The provided fee share
     /// @param maxAllowed The maximum allowed
     error FeeShareTooHigh(
-        uint8 provided,
-        uint8 maxAllowed
+        uint256 provided,
+        uint256 maxAllowed
     );
 
     /// @notice Emitted when the fee share is zero
@@ -171,4 +173,13 @@ library BurnerErrors {
 
     /// @notice Emitted when the admin does not exist
     error AdminDoesNotExist();
+
+    /// @notice Emitted when the second token in the path is not WNATIVE
+    /// @param token The invalid second token address
+    error InvalidTokenOut(
+        address token
+    );
+
+    /// @notice Emitted when payerIsUser is true, should be false
+    error PayerIsUser();
 }

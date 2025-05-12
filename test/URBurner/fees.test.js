@@ -50,9 +50,9 @@ describe("Burner - Fees", function () {
     let swap = await getSwapParamsV3(env);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     // Mock router to return 0.1 ETH
@@ -66,11 +66,11 @@ describe("Burner - Fees", function () {
       "0x0000000000000000000000000000000000000000",
        false,
        "0x", 
-       "0x0000000000000000000000000000000000000000"
+       "0x0000000000000000000000000000000000000000",
+       BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
-
 
     // Check final ETH balances
     const userBalanceAfter = await ethers.provider.getBalance(env.user.address);
@@ -79,7 +79,7 @@ describe("Burner - Fees", function () {
     const expectedUserBalance = userBalanceBefore - gasCost + ethers.parseEther("0.0975"); // 97.5% of 0.1 ETH
 
     const expectedFeeCollectorBalance = feeCollectorBalanceBefore + ethers.parseEther("0.0025"); // 2.5% of 0.1 ETH
-
+    
     expect(userBalanceAfter).to.equal(expectedUserBalance);
     expect(feeCollectorBalanceAfter).to.equal(expectedFeeCollectorBalance);
   });
@@ -91,14 +91,14 @@ describe("Burner - Fees", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
         inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
         inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -112,7 +112,8 @@ describe("Burner - Fees", function () {
       "0x0000000000000000000000000000000000000000",
        false,
        "0x", 
-       "0x0000000000000000000000000000000000000000"
+       "0x0000000000000000000000000000000000000000",
+       BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;

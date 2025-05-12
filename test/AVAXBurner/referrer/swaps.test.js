@@ -16,7 +16,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -30,7 +31,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -75,7 +77,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -87,7 +90,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check final ETH balances
@@ -112,7 +116,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -125,7 +130,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check final ETH balances
@@ -145,7 +151,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Try to use self as referrer
@@ -154,48 +161,9 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.user.address
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelf");
-  });
-
-  it("Should revert when fee collector is used as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    // Try to use fee collector as referrer
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      env.feeCollector.address
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeFeeCollector");
-  });
-
-  it("Should revert when contract address is used as referrer", async function () {
-    const swap = await getSwapParamsV3(env);
-
-    const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
-      amountIn: swap.swapParams.amountIn,
-      amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
-    }];
-
-    // Try to use contract address as referrer
-    await expect(env.burner.connect(env.user).swapExactInputMultiple(
-      swapParams,
-      "0x0000000000000000000000000000000000000000",
-      false,
-      "0x",
-      await env.burner.getAddress()
-    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeContract");
+      env.user.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
+    )).to.be.revertedWithCustomError(env.burner, "ReferrerCannotBeSelfUnlessPartner");
   });
 
   it("Should calculate and distribute partner tier referrer fee correctly (30% tier)", async function () {
@@ -208,7 +176,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -221,7 +190,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check event emission
@@ -254,7 +224,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -267,7 +238,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check event emission
@@ -300,7 +272,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -313,7 +286,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check event emission
@@ -345,13 +319,15 @@ describe("Burner - Referrer Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        
       }
     ];
 
@@ -368,7 +344,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check event emission
@@ -399,7 +376,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Create a random recipient address
@@ -416,7 +394,8 @@ describe("Burner - Referrer Swaps", function () {
       recipient,
       false,
       "0x",
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
 
     // Check event emission
@@ -441,9 +420,11 @@ describe("Burner - Referrer Swaps", function () {
 
   it("Should allow user who is a paid referrer to self-refer", async function () {
     // Setup user as a paid referrer (30% tier)
-    await env.mockUSDC.mint(env.user.address, 25 * 10 ** 6);
-    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25 * 10 ** 6);
-    await env.burner.connect(env.user).paidReferrer(25 * 10 ** 6);
+    const usdcDecimals = BigInt(parseInt(await env.mockUSDC.decimals()));
+    
+    await env.mockUSDC.mint(env.user.address, 25n * 10n ** usdcDecimals);
+    await env.mockUSDC.connect(env.user).approve(await env.burner.getAddress(), 25n * 10n ** usdcDecimals);
+    await env.burner.connect(env.user).paidReferrer(25n * 10n ** usdcDecimals);
 
     const swap = await getSwapParamsV3(env);
 
@@ -451,7 +432,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -464,7 +446,8 @@ describe("Burner - Referrer Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x",
-      env.user.address
+      env.user.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -500,7 +483,8 @@ describe("Burner - Referrer Swaps", function () {
       tokenIn: swap.swapParams.tokenIn,
       amountIn: swap.swapParams.amountIn,
       amountOutMinimum: swap.swapParams.amountOutMinimum,
-      path: swap.swapParams.path
+      path: swap.swapParams.path,
+      
     }];
 
     // Track ETH balances before swap
@@ -514,6 +498,7 @@ describe("Burner - Referrer Swaps", function () {
       true,
       bridgeData,
       env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       {value: ethers.parseEther("0.1")} // Add ETH for bridge fee
     );
 

@@ -24,14 +24,16 @@ describe("Burner - Gas Usage Analysis", function () {
         tokenIn: swap.swapParams.tokenIn,
         amountIn: swap.swapParams.amountIn,
         amountOutMinimum: swap.swapParams.amountOutMinimum,
-        path: swap.swapParams.path
+        path: swap.swapParams.path,
+        
       }];
 
       const tx = await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
         "0x0000000000000000000000000000000000000000",
          false,
          "0x", 
-         "0x0000000000000000000000000000000000000000"
+         "0x0000000000000000000000000000000000000000",
+         BigInt(Math.floor(Date.now() / 1000) + 100000)
       );
       await measureGas(tx);
     });
@@ -43,14 +45,16 @@ describe("Burner - Gas Usage Analysis", function () {
         tokenIn: swap.swapParams.tokenIn,
         amountIn: swap.swapParams.amountIn,
         amountOutMinimum: swap.swapParams.amountOutMinimum,
-        path: swap.swapParams.path
+        path: swap.swapParams.path,
+        
       }];
 
       const tx = await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
         "0x0000000000000000000000000000000000000000",
          false,
          "0x", 
-         "0x0000000000000000000000000000000000000000"
+         "0x0000000000000000000000000000000000000000",
+         BigInt(Math.floor(Date.now() / 1000) + 100000)
       );
       await measureGas(tx);
     });
@@ -62,14 +66,16 @@ describe("Burner - Gas Usage Analysis", function () {
         tokenIn: swap.swapParams.tokenIn,
         amountIn: swap.swapParams.amountIn,
         amountOutMinimum: swap.swapParams.amountOutMinimum,
-        path: swap.swapParams.path
+        path: swap.swapParams.path,
+        
       }];
 
       const tx = await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
         "0x0000000000000000000000000000000000000000",
          false,
          "0x", 
-         "0x0000000000000000000000000000000000000000"
+         "0x0000000000000000000000000000000000000000",
+         BigInt(Math.floor(Date.now() / 1000) + 100000)
       );
       await measureGas(tx);
     });
@@ -85,13 +91,15 @@ describe("Burner - Gas Usage Analysis", function () {
           tokenIn: swap1.swapParams.tokenIn,
           amountIn: swap1.swapParams.amountIn,
           amountOutMinimum: swap1.swapParams.amountOutMinimum,
-          path: swap1.swapParams.path
+          path: swap1.swapParams.path,
+          
         },
         {
           tokenIn: swap2.swapParams.tokenIn,
           amountIn: swap2.swapParams.amountIn,
           amountOutMinimum: swap2.swapParams.amountOutMinimum,
-          path: swap2.swapParams.path
+          path: swap2.swapParams.path,
+          
         }
       ];
 
@@ -99,7 +107,8 @@ describe("Burner - Gas Usage Analysis", function () {
         "0x0000000000000000000000000000000000000000",
          false,
          "0x", 
-         "0x0000000000000000000000000000000000000000"
+         "0x0000000000000000000000000000000000000000",
+         BigInt(Math.floor(Date.now() / 1000) + 100000)
       );
       await measureGas(tx);
     });
@@ -111,7 +120,8 @@ describe("Burner - Gas Usage Analysis", function () {
         "0x0000000000000000000000000000000000000000",
          false,
          "0x", 
-         "0x0000000000000000000000000000000000000000"
+         "0x0000000000000000000000000000000000000000",
+         BigInt(Math.floor(Date.now() / 1000) + 100000)
       );
       await measureGas(tx);
     });

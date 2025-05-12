@@ -20,13 +20,15 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        
       }
     ];
 
@@ -39,7 +41,8 @@ describe("Burner - Multiple Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -84,13 +87,15 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: swap1.swapParams.tokenIn,
         amountIn: swap1.swapParams.amountIn,
         amountOutMinimum: swap1.swapParams.amountOutMinimum,
-        path: swap1.swapParams.path
+        path: swap1.swapParams.path,
+        
       },
       {
         tokenIn: swap2.swapParams.tokenIn,
         amountIn: swap2.swapParams.amountIn,
         amountOutMinimum: swap2.swapParams.amountOutMinimum,
-        path: swap2.swapParams.path
+        path: swap2.swapParams.path,
+        
       }
     ];
 
@@ -103,7 +108,8 @@ describe("Burner - Multiple Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -152,7 +158,8 @@ describe("Burner - Multiple Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -227,7 +234,8 @@ describe("Burner - Multiple Swaps", function () {
         tokenIn: mockTokenAddress,
         amountIn: amountIn,
         amountOutMinimum: amountOutMinimum,
-        path: path
+        path: path,
+        
       });
     }
 
@@ -243,7 +251,8 @@ describe("Burner - Multiple Swaps", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;

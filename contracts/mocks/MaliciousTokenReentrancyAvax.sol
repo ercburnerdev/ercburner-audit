@@ -6,10 +6,10 @@ import "../burner/AVAXBurner.sol";
 import {ILBRouter} from "../burner/interfaces/ILBRouter.sol";
 
 contract MaliciousTokenReentrancyAvax is ERC20 {
-    Burner public burner;
-    
+    AVAXBurner public burner;
+
     constructor(address _burner) ERC20("MaliciousToken", "MAL") {
-        burner = Burner(payable(_burner));
+        burner = AVAXBurner(payable(_burner));
         _mint(msg.sender, 1000000 * 10**18);
     }
 
@@ -17,7 +17,7 @@ contract MaliciousTokenReentrancyAvax is ERC20 {
     function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
         // Attempt reentrancy attack when tokens are transferred from sender to incinerator
         if (recipient == address(burner)) {
-            Burner.SwapParams memory params = Burner.SwapParams({
+            AVAXBurner.SwapParams memory params = AVAXBurner.SwapParams({
                 tokenIn: address(this),
                 amountIn: amount,
                 amountOutMinimum: 0,
@@ -27,9 +27,9 @@ contract MaliciousTokenReentrancyAvax is ERC20 {
                     tokenPath: new IERC20[](0)
                 })
             });
-            Burner.SwapParams[] memory paramsArray = new Burner.SwapParams[](1);
+            AVAXBurner.SwapParams[] memory paramsArray = new AVAXBurner.SwapParams[](1);
             paramsArray[0] = params;
-            burner.swapExactInputMultiple(paramsArray, msg.sender, false, bytes(""), address(0));
+            burner.swapExactInputMultiple(paramsArray, msg.sender, false, bytes(""), address(0), block.timestamp + 1000);
         }
         return super.transferFrom(sender, recipient, amount);
     }

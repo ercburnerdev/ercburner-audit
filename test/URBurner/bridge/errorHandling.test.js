@@ -16,9 +16,9 @@ describe("Burner - Bridge Error Handling", function () {
     
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -28,16 +28,17 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       true, // bridge = true
       bridgeData,
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgePaused");
   });
 
   it("Should revert when trying to set both bridge and recipient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -47,7 +48,8 @@ describe("Burner - Bridge Error Handling", function () {
       env.user.address, // non-zero recipient
       true, // bridge = true
       bridgeData,
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgeAndRecipientBothSet")
       .withArgs(env.user.address);
   });
@@ -55,9 +57,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when trying to bridge with empty bridge data", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -65,16 +67,17 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       true, // bridge = true
       "0x", // empty bridge data
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "InvalidBridgeData");
   });
 
   it("Should revert when non-bridge transaction has non-empty bridge data", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
@@ -84,7 +87,8 @@ describe("Burner - Bridge Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false, // bridge = false
       bridgeData, // non-empty bridge data
-      env.referrer.address
+      env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "BridgeDataMustBeEmpty")
       .withArgs(bridgeData);
   });
@@ -92,9 +96,9 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when non-bridge transaction with ETH has no recipient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -103,6 +107,7 @@ describe("Burner - Bridge Error Handling", function () {
       false, // bridge = false
       "0x", // empty bridge data
       env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       { value: ethers.parseEther("0.1") } // sending ETH
     )).to.be.revertedWithCustomError(env.burner, "RecipientMustBeSet");
   });
@@ -110,16 +115,16 @@ describe("Burner - Bridge Error Handling", function () {
   it("Should revert when bridge ETH value is insufficient", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
     
     // Get the bridge fee divisor to calculate a value below minimum
-    const bridgeFeeDivisor = await env.burner.bridgeFeeDivisor();
-    const minRequired = bridgeFeeDivisor * 20n;
+    const nativeSentFeeDivisor = await env.burner.nativeSentFeeDivisor();
+    const minRequired = nativeSentFeeDivisor * 20n;
     const insufficientValue = minRequired - 1n;
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(
@@ -128,6 +133,7 @@ describe("Burner - Bridge Error Handling", function () {
       true, // bridge = true
       bridgeData,
       env.referrer.address,
+      BigInt(Math.floor(Date.now() / 1000) + 100000),
       { value: insufficientValue }
     )).to.be.revertedWithCustomError(env.burner, "InsufficientValue")
       .withArgs(insufficientValue, minRequired);
@@ -155,8 +161,8 @@ describe("Burner - Bridge Error Handling", function () {
     const bridgeData = ethers.keccak256(ethers.toUtf8Bytes("bridge_data"));
     
     // Get the bridge fee divisor to calculate a value below minimum
-    const bridgeFeeDivisor = await env.burner.bridgeFeeDivisor();
-    const minRequired = bridgeFeeDivisor * 20n;
+    const nativeSentFeeDivisor = await env.burner.nativeSentFeeDivisor();
+    const minRequired = nativeSentFeeDivisor * 20n;
     const insufficientValue = minRequired - 1n;
 
     await expect(env.burner.connect(env.owner).relayBridge(
@@ -167,19 +173,13 @@ describe("Burner - Bridge Error Handling", function () {
       .withArgs(insufficientValue, minRequired);
   });
 
-  it("Should revert when setting bridge address to zero address", async function () {
-    await expect(env.burner.connect(env.owner).setBridgeAddress(
-      "0x0000000000000000000000000000000000000000"
-    )).to.be.revertedWithCustomError(env.burner, "ZeroAddress");
-  });
-
-  it("Should revert when bridge fee divisor is set to zero", async function () {
-    await expect(env.burner.connect(env.owner).setBridgeFeeDivisor(0))
+  it("Should revert when native sent fee divisor is set to zero", async function () {
+    await expect(env.burner.connect(env.owner).setNativeSentFeeDivisor(0))
       .to.be.revertedWithCustomError(env.burner, "FeeDivisorTooLow");
   });
 
-  it("Should revert when bridge fee divisor is set too low", async function () {
-    await expect(env.burner.connect(env.owner).setBridgeFeeDivisor(399))
+  it("Should revert when native sent fee divisor is set too low", async function () {
+    await expect(env.burner.connect(env.owner).setNativeSentFeeDivisor(399))
       .to.be.revertedWithCustomError(env.burner, "FeeDivisorTooLow")
       .withArgs(399, 400);
   });

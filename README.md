@@ -145,6 +145,40 @@ The contracts require the following OpenZeppelin contracts:
 - `@openzeppelin/contracts/utils/Address.sol`
 
 
+## Relay Bridge Integration
+
+The ERC Burner contracts integrate with Relay's bridge service to enable cross-chain transfers. This integration works by:
+
+1. Obtaining a bridge quote from Relay's API
+2. Using the quote data to interact with the Relay bridge contracts
+
+### Getting a Bridge Quote
+
+To use the bridge functionality, you first need to get a quote from Relay's API:
+
+```javascript
+const quote = await getClient()?.actions.getQuote({
+    chainId: sourceChainId,            // Current chain ID
+    toChainId: destinationChainId,     // Target chain ID
+    currency: "0x0000000000000000000000000000000000000000", // Source currency (native token)
+    toCurrency: getChainNativeAddress(destinationChainId), // Destination currency
+    amount: amountToBridge, // Amount to bridge
+    tradeType: "EXACT_INPUT",          // Trade type
+    wallet: walletViem,                // Wallet instance
+    recipient: recipientAddress || userAddress, // Recipient address (default: user's address)
+    refundTo: userAddress              // Address to send refunds in case of failure
+});
+```
+
+### Important Parameters
+
+- **recipient**: The address that will receive the bridged tokens on the destination chain. If not specified, defaults to the user's address.
+- **refundTo**: The address that will receive any refunds in case the bridge operation fails. Always specified to be user's address.
+
+### Deployment Strategy
+
+The contracts will be deployed from a freshly created deployer EOA to ensure common deployment addresses across all supported networks.
+
 ## Development Setup
 
 ### Installing Dependencies

@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { deployTestEnvironment } = require("../setup");
 const { getSwapParamsV3, getSwapParamsV2, getSwapParamsWNATIVE } = require("../utils/getSwapParams");
+const { prepareSwapExactInput, encodePath } = require("../utils/prepareSwaps");
 
 describe("Burner - Error Handling", function () {
   let env;
@@ -14,7 +15,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     )).to.be.revertedWithCustomError(env.burner, "MismatchedInputs");
   });
 
@@ -23,16 +25,17 @@ describe("Burner - Error Handling", function () {
     
     // Override the amountIn to be zero
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
       inputs: swap.swapParams.inputs,
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -48,16 +51,17 @@ describe("Burner - Error Handling", function () {
     
     // Override the amountIn to be more than user's balance
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.reverted; // ERC20 insufficient balance error
   });
@@ -68,16 +72,16 @@ describe("Burner - Error Handling", function () {
     await swap.token.connect(env.user).approve(await env.burner.getAddress(), 0);
 
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
     }];
 
     await expect(env.burner.connect(env.user).swapExactInputMultiple(swapParams,
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.be.reverted; // ERC20 insufficient allowance error
   });
@@ -87,9 +91,9 @@ describe("Burner - Error Handling", function () {
     
     // Override the minimum amount to be higher than what router will return
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
     // Get initial token balance
     const initialTokenBalance = await swap.token.balanceOf(env.user.address);
@@ -101,7 +105,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -119,9 +124,9 @@ describe("Burner - Error Handling", function () {
   it("Should emit SwapFailed with 'Universal Router error' when swap returns zero", async function () {
     const swap = await getSwapParamsV3(env);
     const swapParams = [{
-      tokenIn: swap.swapParams.tokenIn,
       commands: swap.swapParams.commands,
-      inputs: swap.swapParams.inputs
+      inputs: swap.swapParams.inputs,
+      
     }];
 
     // Mock router to return 0
@@ -131,7 +136,8 @@ describe("Burner - Error Handling", function () {
       "0x0000000000000000000000000000000000000000",
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     ))
       .to.emit(env.burner, "SwapFailed")
       .withArgs(
@@ -141,4 +147,36 @@ describe("Burner - Error Handling", function () {
         "Router error"
       );
   });
-}); 
+
+  it("should revert with InvalidDeadline when deadline is in the past", async function () {
+    const encodedPath = encodePath(
+      "0x00", 
+      [await env.mockToken.getAddress(), await env.mockWNATIVE.getAddress()], 
+      [3000]
+    );
+
+    // Prepare swap params
+    const swap = prepareSwapExactInput(
+      "0x00",
+      await env.burner.getAddress(),
+      await env.mockToken.getAddress(),
+      ethers.parseEther("100"),
+      ethers.parseEther("0"),
+      encodedPath,
+      false,
+      env.user.address,
+      Math.floor(Date.now() / 1000) - 1
+    );
+
+    // Attempt reentrancy attack
+    await expect(
+      env.burner.connect(env.user).swapExactInputMultiple([swap],
+        "0x0000000000000000000000000000000000000000",
+        false,
+        "0x", 
+        "0x0000000000000000000000000000000000000000",
+        BigInt(Math.floor(Date.now() / 1000) - 100000)
+     )
+    ).to.be.revertedWithCustomError(env.burner, "InvalidDeadline");
+  });
+});

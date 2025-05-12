@@ -17,14 +17,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -40,7 +40,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient, // Recipient is the owner, not the zero address
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -89,14 +90,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -112,7 +113,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -171,7 +173,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -245,15 +248,15 @@ describe("Burner - Multiple Swaps With Recipient", function () {
         ethers.parseEther("100"),
         i % 3 === 0 ? ethers.parseEther("2") : ethers.parseEther("0.1"),
         i % 2 === 0 ? encodedPath : [await mockTokens[i].getAddress(), await env.mockWNATIVE.getAddress()],
-        true,
-        Math.floor(Date.now() / 1000) + 3600
+        false,
+        env.user.address,
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       swapParams.push({
-        tokenIn: swap.tokenIn,
         commands: swap.commands,
         inputs: swap.inputs,
-        deadline: swap.deadline
+        
       });
     }
 
@@ -271,7 +274,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      "0x0000000000000000000000000000000000000000"
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -349,14 +353,14 @@ describe("Burner - Multiple Swaps With Recipient", function () {
 
     const swapParams = [
       {
-        tokenIn: swap1.swapParams.tokenIn,
         commands: swap1.swapParams.commands,
-        inputs: swap1.swapParams.inputs
+        inputs: swap1.swapParams.inputs,
+        
       },
       {
-        tokenIn: swap2.swapParams.tokenIn,
         commands: swap2.swapParams.commands,
-        inputs: swap2.swapParams.inputs
+        inputs: swap2.swapParams.inputs,
+        
       }
     ];
 
@@ -380,7 +384,8 @@ describe("Burner - Multiple Swaps With Recipient", function () {
       recipient,
       false,
       "0x", 
-      referrer
+      referrer,
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
     );
     const receipt = await tx.wait();
     const gasCost = receipt.gasUsed * receipt.gasPrice;
@@ -422,5 +427,25 @@ describe("Burner - Multiple Swaps With Recipient", function () {
     // Recipient should receive the swapped ETH after fees
     expect(recipientBalanceAfter)
       .to.equal(recipientBalanceBefore + (amountAfterFee));
+  });
+
+  it("Should revert when recipient is user", async function () {
+    const swap = await getSwapParamsV3(env);
+
+    const swapParams = [
+      {
+        commands: swap.swapParams.commands,
+        inputs: swap.swapParams.inputs,
+        
+      }
+    ];
+
+    expect(await env.burner.connect(env.user).swapExactInputMultiple(swapParams,
+      env.user.address,
+      false,
+      "0x", 
+      "0x0000000000000000000000000000000000000000",
+      BigInt(Math.floor(Date.now() / 1000) + 100000)
+    )).to.revertedWithCustomError(env.burner, "RecipientIsSender");
   });
 }); 

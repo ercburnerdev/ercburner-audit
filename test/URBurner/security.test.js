@@ -31,17 +31,19 @@ describe("Burner - Security Tests", function () {
         ethers.parseEther("100"),
         ethers.parseEther("0"),
         encodedPath,
-        true,
-        Math.floor(Date.now() / 1000) + 3600
+        false,
+        env.user.address,
+        Math.floor(Date.now() / 1000) + 100000
       );
 
       // Attempt reentrancy attack
       await expect(
-        env.burner.swapExactInputMultiple([swap],
+        env.burner.connect(env.user).swapExactInputMultiple([swap],
           "0x0000000000000000000000000000000000000000",
           false,
           "0x", 
-          "0x0000000000000000000000000000000000000000"
+          "0x0000000000000000000000000000000000000000",
+          BigInt(Math.floor(Date.now() / 1000) + 100000)
        )
       ).to.be.revertedWithCustomError(env.burner, "ReentrancyGuardReentrantCall");
     });
